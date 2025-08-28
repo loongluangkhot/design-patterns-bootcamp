@@ -1,0 +1,128 @@
+---
+description: 4-Week E-Commerce Platform Design Patterns Curriculum
+alwaysApply: false
+---
+# 4-Week E-Commerce Platform Design Patterns Curriculum
+
+**Project: "ShopCraft" - Complete E-Commerce Platform**
+
+## Course Overview
+This curriculum covers all 23 classic design patterns through the development of a complete e-commerce platform called "ShopCraft." Each pattern is taught using Socratic reasoning and implemented in language of choice within the context of realistic e-commerce scenarios.
+
+## Week 1: Creational Patterns (Building the Foundation)
+
+### Day 1: Factory Method & Abstract Factory
+- **Implementation:** Payment processor factory, Product factory for different product types
+- **E-commerce Context:** Creating different payment methods and product types dynamically
+
+### Day 2: Builder Pattern
+- **Implementation:** Order builder, Product configuration builder
+- **E-commerce Context:** Constructing complex orders and customizable products step-by-step
+
+### Day 3: Prototype Pattern
+- **Implementation:** Product template cloning, Shopping cart state copying
+- **E-commerce Context:** Duplicating product configurations and saving cart states
+
+### Day 4: Singleton Pattern
+- **Implementation:** Database connection manager, Application configuration
+- **E-commerce Context:** Ensuring single instances of critical system components
+
+### Day 5: Review & Integration
+- **Deliverable:** Basic product creation and configuration system
+- **Focus:** Connecting all creational patterns in the e-commerce context
+
+## Week 2: Structural Patterns (Organizing the Architecture)
+
+### Day 1: Adapter & Bridge
+- **Implementation:** Third-party payment gateway adapters, Database abstraction bridge
+- **E-commerce Context:** Integrating external services and abstracting data layers
+
+### Day 2: Composite & Decorator
+- **Implementation:** Category hierarchy (composite), Product pricing decorators (discounts, taxes)
+- **E-commerce Context:** Building product categories and applying dynamic pricing
+
+### Day 3: Facade & Flyweight
+- **Implementation:** Checkout process facade, Product image flyweight for memory optimization
+- **E-commerce Context:** Simplifying complex operations and optimizing resource usage
+
+### Day 4: Proxy Pattern
+- **Implementation:** Lazy loading proxy for product images, Caching proxy for API calls
+- **E-commerce Context:** Performance optimization and resource management
+
+### Day 5: Review & Integration
+- **Deliverable:** Complete product catalog with optimized data handling
+- **Focus:** Structural optimization and clean architecture
+
+## Week 3: Behavioral Patterns Part 1 (Business Logic & Workflows)
+
+### Day 1: Chain of Responsibility & Command
+- **Implementation:** Order validation chain, Undo/redo for cart operations
+- **E-commerce Context:** Processing requests through validation steps and implementing reversible operations
+
+### Day 2: Interpreter & Iterator
+- **Implementation:** Discount rule interpreter, Product collection iterators
+- **E-commerce Context:** Processing business rules and traversing product collections
+
+### Day 3: Mediator & Memento
+- **Implementation:** Order processing mediator, Shopping cart state memento
+- **E-commerce Context:** Coordinating complex interactions and state management
+
+### Day 4: Practice & Implementation
+- **Focus:** Integration of patterns with existing codebase
+- **Activities:** Hands-on coding and pattern interaction analysis
+
+### Day 5: Review & Mini-Project
+- **Deliverable:** Complete order processing workflow
+- **Focus:** End-to-end business process implementation
+
+## Week 4: Behavioral Patterns Part 2 & Final Integration
+
+### Day 1: Observer & State
+- **Implementation:** Order status notifications (observer), Order state machine
+- **E-commerce Context:** Event-driven notifications and order lifecycle management
+
+### Day 2: Strategy & Template Method
+- **Implementation:** Shipping calculation strategies, Report generation template
+- **E-commerce Context:** Flexible algorithms and standardized processes
+
+### Day 3: Visitor Pattern
+- **Implementation:** Order analytics visitor, Tax calculation visitor
+- **E-commerce Context:** Operations on complex object structures
+
+### Day 4: Pattern Combinations & Anti-patterns
+- **Focus:** Refactoring and optimizing pattern interactions
+- **Activities:** Identifying when patterns work together and common pitfalls
+
+### Day 5: Final Project Completion
+- **Deliverable:** Full-featured e-commerce platform demonstrating all 23 patterns
+- **Activities:** Final integration, testing, and documentation
+
+## Daily Learning Structure
+Each day follows this consistent approach:
+1. **Problem identification** - Understanding the real-world challenge
+2. **Pattern definition and structure** - Learning the theoretical foundation
+3. **C# implementation in ShopCraft context** - Practical coding in e-commerce scenarios
+4. **Real-world examples** - Seeing the pattern in action beyond our project
+5. **When to use/avoid** - Understanding appropriate application
+
+## Teaching Method
+- **Socratic Reasoning:** Each concept is taught through guided questioning to help students discover solutions naturally
+- **Contextual Learning:** All patterns are learned within the realistic e-commerce platform context
+- **Progressive Building:** Each week builds upon previous work, creating a complete application
+
+## Prerequisites
+- Solid understanding of C# and object-oriented programming concepts
+- Familiarity with classes, interfaces, inheritance, and polymorphism
+- Basic understanding of software architecture principles
+
+## Final Deliverable
+A complete "ShopCraft" e-commerce platform demonstrating all 23 design patterns working together in a cohesive, real-world application.
+
+---
+
+## How to Use This Curriculum
+
+When ready to begin, simply prompt:
+> I'm ready to start the Design Patterns curriculum using my language of choice Java. Please teach using Socratic reasoning. Let's begin with Week 1, Day 1.
+
+The instructor will guide you through each pattern using questions and discovery-based learning, implementing each pattern within the context of building the ShopCraft e-commerce platform.
