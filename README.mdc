@@ -101,7 +101,7 @@ This curriculum covers all 23 classic design patterns through the development of
 Each day follows this consistent approach:
 1. **Problem identification** - Understanding the real-world challenge
 2. **Pattern definition and structure** - Learning the theoretical foundation
-3. **C# implementation in ShopCraft context** - Practical coding in e-commerce scenarios
+3. **Implementation using language of choice in ShopCraft context** - Practical coding in e-commerce scenarios
 4. **Real-world examples** - Seeing the pattern in action beyond our project
 5. **When to use/avoid** - Understanding appropriate application
 
@@ -111,7 +111,7 @@ Each day follows this consistent approach:
 - **Progressive Building:** Each week builds upon previous work, creating a complete application
 
 ## Prerequisites
-- Solid understanding of C# and object-oriented programming concepts
+- Solid understanding of language of choice and object-oriented programming concepts
 - Familiarity with classes, interfaces, inheritance, and polymorphism
 - Basic understanding of software architecture principles
 
