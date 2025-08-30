@@ -3,6 +3,14 @@ description: Current learning status
 alwaysApply: false
 ---
 
+<!-- 
+TEMPLATE RULES:
+- Do not modify the structure or add new sections
+- Only change status indicators: ⏳ (pending) → ✅ (completed)
+- Keep all existing headings, bullet points, and formatting
+- Update Progress Summary numbers when marking items complete
+-->
+
 # Learning Progress Tracker
 
 ## Week 1: Creational Patterns
