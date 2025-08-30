@@ -125,10 +125,13 @@ A complete "ShopCraft" e-commerce platform demonstrating all 23 design patterns 
 
 ## How to Use This Curriculum
 
-When ready to begin, simply prompt:
-> BEGIN
+When ready to begin, use prompt:
+> BEGIN_LEARNING
 
 To resume using [STATUS.mdc](./STATUS.mdc), use prompt:
-> RESUME
+> RESUME_LEARNING
+
+To update progress, use prompt:
+> UPDATE_PROGRESS
 
 The instructor will guide you through each pattern using questions and discovery-based learning, implementing each pattern within the context of building the ShopCraft e-commerce platform.
