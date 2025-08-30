@@ -1,0 +1,95 @@
+---
+description: Current learning status
+alwaysApply: false
+---
+
+# Learning Progress Tracker
+
+## Week 1: Creational Patterns
+
+### Day 1: Factory Method & Abstract Factory ⏳
+- Factory Method Pattern ⏳
+- Abstract Factory Pattern ⏳
+
+### Day 2: Builder Pattern ⏳
+- Order Builder ⏳
+- Product Configuration Builder ⏳
+
+### Day 3: Prototype Pattern ⏳
+- Product Template Cloning ⏳
+- Shopping Cart State Copying ⏳
+
+### Day 4: Singleton Pattern ⏳
+- Database Connection Manager ⏳
+- Application Configuration ⏳
+
+### Day 5: Review & Integration ⏳
+- Pattern Integration ⏳
+
+## Week 2: Structural Patterns
+
+### Day 1: Adapter & Bridge ⏳
+- Third-party Payment Gateway Adapters ⏳
+- Database Abstraction Bridge ⏳
+
+### Day 2: Composite & Decorator ⏳
+- Category Hierarchy (Composite) ⏳
+- Product Pricing Decorators ⏳
+
+### Day 3: Facade & Flyweight ⏳
+- Checkout Process Facade ⏳
+- Product Image Flyweight ⏳
+
+### Day 4: Proxy Pattern ⏳
+- Lazy Loading Proxy ⏳
+- Caching Proxy ⏳
+
+### Day 5: Review & Integration ⏳
+- Structural Optimization ⏳
+
+## Week 3: Behavioral Patterns Part 1
+
+### Day 1: Chain of Responsibility & Command ⏳
+- Order Validation Chain ⏳
+- Undo/Redo for Cart Operations ⏳
+
+### Day 2: Interpreter & Iterator ⏳
+- Discount Rule Interpreter ⏳
+- Product Collection Iterators ⏳
+
+### Day 3: Mediator & Memento ⏳
+- Order Processing Mediator ⏳
+- Shopping Cart State Memento ⏳
+
+### Day 4: Practice & Implementation ⏳
+- Pattern Integration ⏳
+
+### Day 5: Review & Mini-Project ⏳
+- Order Processing Workflow ⏳
+
+## Week 4: Behavioral Patterns Part 2
+
+### Day 1: Observer & State ⏳
+- Order Status Notifications ⏳
+- Order State Machine ⏳
+
+### Day 2: Strategy & Template Method ⏳
+- Shipping Calculation Strategies ⏳
+- Report Generation Template ⏳
+
+### Day 3: Visitor Pattern ⏳
+- Order Analytics Visitor ⏳
+- Tax Calculation Visitor ⏳
+
+### Day 4: Pattern Combinations & Anti-patterns ⏳
+- Pattern Interactions ⏳
+
+### Day 5: Final Project Completion ⏳
+- Full E-commerce Platform ⏳
+
+---
+
+## Progress Summary
+- **Patterns Completed**: 0/23
+- **Days Completed**: 0/20
+- **Weeks Completed**: 0/4

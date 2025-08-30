@@ -6,6 +6,9 @@ alwaysApply: false
 
 **Project: "ShopCraft" - Complete E-Commerce Platform**
 
+## Learning Progress
+> **Current Status**: See [STATUS.mdc](./STATUS.mdc) for current learning progress.
+
 ## Course Overview
 This curriculum covers all 23 classic design patterns through the development of a complete e-commerce platform called "ShopCraft." Each pattern is taught using Socratic reasoning and implemented in language of choice within the context of realistic e-commerce scenarios.
 
@@ -123,6 +126,9 @@ A complete "ShopCraft" e-commerce platform demonstrating all 23 design patterns 
 ## How to Use This Curriculum
 
 When ready to begin, simply prompt:
-> I'm ready to start the Design Patterns curriculum using my language of choice Java. Please teach using Socratic reasoning. Let's begin with Week 1, Day 1.
+> BEGIN
+
+To resume using [STATUS.mdc](./STATUS.mdc), use prompt:
+> RESUME
 
 The instructor will guide you through each pattern using questions and discovery-based learning, implementing each pattern within the context of building the ShopCraft e-commerce platform.
