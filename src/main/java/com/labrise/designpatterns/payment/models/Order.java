@@ -1,4 +1,4 @@
-package com.labrise.designpatterns;
+package com.labrise.designpatterns.payment.models;
 
 import lombok.Data;
 

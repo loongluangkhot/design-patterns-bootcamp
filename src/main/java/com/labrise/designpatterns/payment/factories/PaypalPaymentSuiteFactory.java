@@ -1,4 +1,11 @@
-package com.labrise.designpatterns;
+package com.labrise.designpatterns.payment.factories;
+
+import com.labrise.designpatterns.payment.interfaces.IPaymentSuiteFactory;
+import com.labrise.designpatterns.payment.interfaces.IPaymentProcessor;
+import com.labrise.designpatterns.payment.interfaces.IRefundProcessor;
+import com.labrise.designpatterns.payment.interfaces.IReceiptProcessor;
+import com.labrise.designpatterns.payment.enums.PaymentMethod;
+import com.labrise.designpatterns.payment.models.Order;
 
 public class PaypalPaymentSuiteFactory implements IPaymentSuiteFactory {
 

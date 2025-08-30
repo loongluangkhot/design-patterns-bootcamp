@@ -1,4 +1,4 @@
-package com.labrise.designpatterns;
+package com.labrise.designpatterns.payment.enums;
 
 public class PaymentMethod {
     public final static String PAYPAL = "PAYPAL";

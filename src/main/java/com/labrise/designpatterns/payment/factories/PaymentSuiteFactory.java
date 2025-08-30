@@ -1,7 +1,11 @@
-package com.labrise.designpatterns;
+package com.labrise.designpatterns.payment.factories;
 
 import java.util.ArrayList;
 import java.util.Optional;
+import com.labrise.designpatterns.payment.interfaces.IPaymentSuiteFactory;
+import com.labrise.designpatterns.payment.interfaces.IPaymentProcessor;
+import com.labrise.designpatterns.payment.interfaces.IRefundProcessor;
+import com.labrise.designpatterns.payment.interfaces.IReceiptProcessor;
 
 /**
  * Week 1, Day 1: Abstract Factory Pattern
