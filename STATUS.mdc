@@ -15,9 +15,9 @@ TEMPLATE RULES:
 
 ## Week 1: Creational Patterns
 
-### Day 1: Factory Method & Abstract Factory ⏳
-- Factory Method Pattern ⏳
-- Abstract Factory Pattern ⏳
+### Day 1: Factory Method & Abstract Factory ✅
+- Factory Method Pattern ✅
+- Abstract Factory Pattern ✅
 
 ### Day 2: Builder Pattern ⏳
 - Order Builder ⏳
@@ -97,6 +97,10 @@ TEMPLATE RULES:
 
 ---
 
+## Progress Summary
+- **Patterns Completed**: 2/23
+- **Days Completed**: 1/20
+- **Weeks Completed**: 0/4
 ## Progress Summary
 - **Patterns Completed**: 0/23
 - **Days Completed**: 0/20
