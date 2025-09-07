@@ -1,6 +1,6 @@
-package com.labrise.designpatterns.payment.interfaces;
+package com.labrise.designpatterns.payment;
 
-import com.labrise.designpatterns.payment.suites.PaymentSuite;
+import com.labrise.designpatterns.models.PaymentSuite;
 
 public interface IPaymentSuiteFactory {
     String getMethod();
