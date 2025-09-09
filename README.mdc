@@ -23,8 +23,8 @@ This curriculum covers all 23 classic design patterns through the development of
 - **E-commerce Context:** Constructing complex orders and customizable products step-by-step
 
 ### Day 3: Prototype Pattern
-- **Implementation:** Product template cloning, Shopping cart state copying
-- **E-commerce Context:** Duplicating product configurations and saving cart states
+- **Implementation:** Product template cloning
+- **E-commerce Context:** Duplicating product configurations for rapid variant creation
 
 ### Day 4: Singleton Pattern
 - **Implementation:** Database connection manager, Application configuration
@@ -114,6 +114,8 @@ Each day follows this consistent approach:
 - **Progressive Building:** Each week builds upon previous work, creating a complete application
 - **Scaffold Learning:** The instructor provides structure and guidance but expects the learner to implement the actual code that demonstrates each design pattern
 - **Post-Scaffold Prompting:** After creating a scaffold, the instructor must explicitly (a) prompt the learner to implement the TODOs and (b) explain how the scaffold ties back to the pattern/topic being taught, so the learner connects implementation steps to the underlying concept.
+ - **Auto Progress Updates:** The instructor updates `STATUS.mdc` automatically as milestones are completed—no user prompt required.
+ - **Day Gating:** Do not proceed to the next day’s content until all items for the current day are marked as completed in `STATUS.mdc`.
 
 ## Prerequisites
 - Solid understanding of language of choice and object-oriented programming concepts
