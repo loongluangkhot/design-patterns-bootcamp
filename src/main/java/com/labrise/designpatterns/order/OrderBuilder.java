@@ -134,27 +134,28 @@ public class OrderBuilder {
         validateOrder();
         calculateTotals();
         
-        Order order = new Order();
-        order.setOrderId(orderId);
-        order.setOrderDate(orderDate);
-        order.setStatus(status);
-        order.setCustomerId(customerId);
-        order.setCustomerName(customerName);
-        order.setCustomerEmail(customerEmail);
-        order.setItems(items);
-        order.setSubtotal(subtotal);
-        order.setShippingAddress(shippingAddress);
-        order.setShippingMethod(shippingMethod);
-        order.setShippingCost(shippingCost);
-        order.setBillingAddress(billingAddress);
-        order.setPaymentMethod(paymentMethod);
-        order.setDiscountCode(discountCode);
-        order.setDiscountAmount(discountAmount);
-        order.setTaxAmount(taxAmount);
-        order.setTotalAmount(totalAmount);
-        order.setGiftWrapping(giftWrapping);
-        order.setGiftMessage(giftMessage);
-        order.setSpecialInstructions(specialInstructions);
+        Order order = new Order(
+            orderId,
+            orderDate,
+            status,
+            customerId,
+            customerName,
+            customerEmail,
+            items,
+            subtotal,
+            shippingAddress,
+            shippingMethod,
+            shippingCost,
+            billingAddress,
+            paymentMethod,
+            discountCode,
+            discountAmount,
+            taxAmount,
+            totalAmount,
+            giftWrapping,
+            giftMessage,
+            specialInstructions
+        );
         
         return order;
     }
