@@ -29,7 +29,6 @@ public class PaypalPaymentSuiteFactory implements IPaymentSuiteFactory {
 
         @Override
         public void process(Order order) {
-            // TODO Auto-generated method stub
             throw new UnsupportedOperationException("Unimplemented method 'process'");
         }
         
@@ -39,7 +38,6 @@ public class PaypalPaymentSuiteFactory implements IPaymentSuiteFactory {
 
         @Override
         public void process(Order order) {
-            // TODO Auto-generated method stub
             throw new UnsupportedOperationException("Unimplemented method 'process'");
         }
         
@@ -49,7 +47,6 @@ public class PaypalPaymentSuiteFactory implements IPaymentSuiteFactory {
 
         @Override
         public void process(Order order) {
-            // TODO Auto-generated method stub
             throw new UnsupportedOperationException("Unimplemented method 'process'");
         }
         
