@@ -113,6 +113,7 @@ Each day follows this consistent approach:
 - **Contextual Learning:** All patterns are learned within the realistic e-commerce platform context
 - **Progressive Building:** Each week builds upon previous work, creating a complete application
 - **Scaffold Learning:** The instructor provides structure and guidance but expects the learner to implement the actual code that demonstrates each design pattern
+- **Post-Scaffold Prompting:** After creating a scaffold, the instructor must explicitly (a) prompt the learner to implement the TODOs and (b) explain how the scaffold ties back to the pattern/topic being taught, so the learner connects implementation steps to the underlying concept.
 
 ## Prerequisites
 - Solid understanding of language of choice and object-oriented programming concepts
