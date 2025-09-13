@@ -29,7 +29,8 @@ public class PaypalPaymentSuiteFactory implements IPaymentSuiteFactory {
 
         @Override
         public void process(Order order) {
-            throw new UnsupportedOperationException("Unimplemented method 'process'");
+            System.out.println("[PayPal] Processing payment for order " + order.getOrderId() +
+                ": total=" + order.getTotalAmount() + ", customer=" + order.getCustomerEmail());
         }
         
     }
@@ -38,7 +39,8 @@ public class PaypalPaymentSuiteFactory implements IPaymentSuiteFactory {
 
         @Override
         public void process(Order order) {
-            throw new UnsupportedOperationException("Unimplemented method 'process'");
+            System.out.println("[PayPal] Processing refund for order " + order.getOrderId() +
+                ": amount=" + order.getTotalAmount());
         }
         
     }
@@ -47,7 +49,8 @@ public class PaypalPaymentSuiteFactory implements IPaymentSuiteFactory {
 
         @Override
         public void process(Order order) {
-            throw new UnsupportedOperationException("Unimplemented method 'process'");
+            System.out.println("[PayPal] Sending receipt for order " + order.getOrderId() +
+                " to " + order.getCustomerEmail());
         }
         
     }

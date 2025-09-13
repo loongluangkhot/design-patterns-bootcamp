@@ -1,6 +1,6 @@
 package com.labrise.designpatterns.payment;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -27,9 +27,9 @@ import java.util.Optional;
  */
 public class PaymentSuiteFactory {
 
-    private ArrayList<IPaymentSuiteFactory> _paymentServiceFactories;
+    private List<IPaymentSuiteFactory> _paymentServiceFactories;
 
-    public PaymentSuiteFactory(ArrayList<IPaymentSuiteFactory> paymentServiceFactories) {
+    public PaymentSuiteFactory(List<IPaymentSuiteFactory> paymentServiceFactories) {
         _paymentServiceFactories = paymentServiceFactories;
     }
 
@@ -46,15 +46,15 @@ public class PaymentSuiteFactory {
         throw new IllegalArgumentException("Unknown payment method: " + method);
     }
 
-    IPaymentProcessor createPaymentProcessor(String method) {
+    public IPaymentProcessor createPaymentProcessor(String method) {
         return getFactory(method).createPaymentProcessor();
     }
 
-    IRefundProcessor createRefundProcessor(String method) {
+    public IRefundProcessor createRefundProcessor(String method) {
         return getFactory(method).createRefundProcessor();
     }
 
-    IReceiptProcessor createReceiptProcessor(String method) {
+    public IReceiptProcessor createReceiptProcessor(String method) {
         return getFactory(method).createReceiptProcessor();
     }
 
