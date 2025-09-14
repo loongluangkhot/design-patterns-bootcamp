@@ -1,7 +1,3 @@
----
-description: 4-Week E-Commerce Platform Design Patterns Curriculum
-alwaysApply: false
----
 # 4-Week E-Commerce Platform Design Patterns Curriculum
 
 **Project: "ShopCraft" - Complete E-Commerce Platform**
@@ -99,43 +95,3 @@ This curriculum covers all 23 classic design patterns through the development of
 ### Day 5: Final Project Completion
 - **Deliverable:** Full-featured e-commerce platform demonstrating all 23 patterns
 - **Activities:** Final integration, testing, and documentation
-
-## Daily Learning Structure
-Each day follows this consistent approach:
-1. **Problem identification** - Understanding the real-world challenge
-2. **Pattern definition and structure** - Learning the theoretical foundation
-3. **Implementation using language of choice in ShopCraft context** - Practical coding in e-commerce scenarios
-4. **Real-world examples** - Seeing the pattern in action beyond our project
-5. **When to use/avoid** - Understanding appropriate application
-
-## Teaching Method
-- **Socratic Reasoning:** Each concept is taught through guided questioning to help students discover solutions naturally
-- **Contextual Learning:** All patterns are learned within the realistic e-commerce platform context
-- **Progressive Building:** Each week builds upon previous work, creating a complete application
-- **Scaffold Learning:** The instructor provides structure and guidance but expects the learner to implement the actual code that demonstrates each design pattern
-- **Post-Scaffold Prompting:** After creating a scaffold, the instructor must explicitly (a) prompt the learner to implement the TODOs and (b) explain how the scaffold ties back to the pattern/topic being taught, so the learner connects implementation steps to the underlying concept.
- - **Auto Progress Updates:** The instructor updates `STATUS.mdc` automatically as milestones are completed—no user prompt required.
- - **Day Gating:** Do not proceed to the next day’s content until all items for the current day are marked as completed in `STATUS.mdc`.
-
-## Prerequisites
-- Solid understanding of language of choice and object-oriented programming concepts
-- Familiarity with classes, interfaces, inheritance, and polymorphism
-- Basic understanding of software architecture principles
-
-## Final Deliverable
-A complete "ShopCraft" e-commerce platform demonstrating all 23 design patterns working together in a cohesive, real-world application.
-
----
-
-## How to Use This Curriculum
-
-When ready to begin, use prompt:
-> BEGIN_LEARNING
-
-To resume using [STATUS.mdc](./STATUS.mdc), use prompt:
-> RESUME_LEARNING
-
-To update progress, use prompt:
-> UPDATE_PROGRESS
-
-The instructor will guide you through each pattern using questions and discovery-based learning, implementing each pattern within the context of building the ShopCraft e-commerce platform.
