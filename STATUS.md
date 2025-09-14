@@ -26,14 +26,14 @@ TEMPLATE RULES:
 - Database Connection Manager ⏳
 - Application Configuration ⏳
 
-### Day 5: Review & Integration ⏭️
-- Pattern Integration ⏭️ (Skipped)
+### Day 5: Review & Integration ⏳
+- Pattern Integration ⏳
 
 ## Week 2: Structural Patterns
 
-### Day 1: Adapter & Bridge ✅
-- Third-party Payment Gateway Adapters ✅
-- Database Abstraction Bridge ✅
+### Day 1: Adapter & Bridge ⏳
+- Third-party Payment Gateway Adapters ⏳
+- Database Abstraction Bridge ⏳
 
 ### Day 2: Composite & Decorator ⏳
 - Category Hierarchy (Composite) ⏳
