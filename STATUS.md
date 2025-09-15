@@ -34,9 +34,9 @@ TEMPLATE RULES:
 - Third-party Payment Gateway Adapters ✅
 - Database Abstraction Bridge ✅
 
-### Day 2: Composite & Decorator ⏳
-- Category Hierarchy (Composite) ⏳
-- Product Pricing Decorators ⏳
+### Day 2: Composite & Decorator ✅
+- Category Hierarchy (Composite) ✅
+- Product Pricing Decorators ✅
 
 ### Day 3: Facade & Flyweight ⏳
 - Checkout Process Facade ⏳
@@ -92,6 +92,6 @@ TEMPLATE RULES:
 ---
 
 ## Progress Summary
-- **Patterns Completed**: 6/23
-- **Days Completed**: 4/20
+- **Patterns Completed**: 8/23
+- **Days Completed**: 5/20
 - **Weeks Completed**: 0/4
