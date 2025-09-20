@@ -18,8 +18,6 @@ import java.util.Optional;
  * 1. Switch between different database implementations without changing business logic
  * 2. Add new database types without modifying existing code
  * 3. Keep business logic separate from database-specific details
- * 
- * TODO: Implement the database service methods using the bridge pattern
  */
 public class DatabaseService {
     
@@ -42,12 +40,6 @@ public class DatabaseService {
         System.out.println("Product: " + product.getName());
         
         try {
-            // Validate product data
-            if (product == null) {
-                System.out.println("❌ Product cannot be null");
-                return null;
-            }
-            
             if (product.getName() == null || product.getName().trim().isEmpty()) {
                 System.out.println("❌ Product name is required");
                 return null;
@@ -216,12 +208,6 @@ public class DatabaseService {
         System.out.println("Order: " + order.getOrderId());
         
         try {
-            // Validate order data
-            if (order == null) {
-                System.out.println("❌ Order cannot be null");
-                return null;
-            }
-            
             if (order.getCustomerId() == null || order.getCustomerId().trim().isEmpty()) {
                 System.out.println("❌ Customer ID is required");
                 return null;

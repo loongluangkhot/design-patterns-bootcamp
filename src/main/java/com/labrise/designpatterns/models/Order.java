@@ -6,6 +6,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.labrise.designpatterns.facade.ShippingMethod;
+
 @Value
 public class Order {
     // Core order info
@@ -24,7 +26,7 @@ public class Order {
     
     // Shipping
     private String shippingAddress;
-    private String shippingMethod;
+    private ShippingMethod shippingMethod;
     private BigDecimal shippingCost;
     
     // Billing

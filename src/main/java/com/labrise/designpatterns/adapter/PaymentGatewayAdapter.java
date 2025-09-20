@@ -49,8 +49,6 @@ public class PaymentGatewayAdapter implements IPaymentProcessor, IRefundProcesso
         System.out.println("Adapter: Processing payment for order: " + order.getOrderId());
         
         try {
-            // Extract payment information from order
-            String paymentMethod = order.getPaymentMethod();
             BigDecimal totalAmount = order.getTotalAmount();
             
             // Create PaymentMethod object (simplified for demo)

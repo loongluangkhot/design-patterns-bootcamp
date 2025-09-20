@@ -2,6 +2,7 @@ package com.labrise.designpatterns.bridge;
 
 import com.labrise.designpatterns.models.Order;
 import com.labrise.designpatterns.models.Product;
+import com.labrise.designpatterns.facade.ShippingMethod;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -117,7 +118,7 @@ public class BridgePatternDemo {
             List.of(), // items
             new BigDecimal("2499.99"), // subtotal
             "123 Main St, City, State 12345",
-            "Standard Shipping",
+            ShippingMethod.STANDARD,
             new BigDecimal("9.99"), // shipping cost
             "123 Main St, City, State 12345", // billing address
             "Credit Card",
@@ -169,7 +170,7 @@ public class BridgePatternDemo {
             List.of(), // items
             new BigDecimal("199.99"), // subtotal
             "456 Oak Ave, City, State 54321",
-            "Express Shipping",
+            ShippingMethod.EXPRESS,
             new BigDecimal("19.99"), // shipping cost
             "456 Oak Ave, City, State 54321", // billing address
             "Credit Card",

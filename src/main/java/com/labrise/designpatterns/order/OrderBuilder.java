@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.labrise.designpatterns.facade.ShippingMethod;
 import com.labrise.designpatterns.models.Order;
 import com.labrise.designpatterns.models.Order.OrderStatus;
 import com.labrise.designpatterns.models.OrderItem;
@@ -41,7 +42,7 @@ public class OrderBuilder {
     
     // Shipping
     private String shippingAddress;
-    private String shippingMethod;
+    private ShippingMethod shippingMethod;
     private BigDecimal shippingCost;
     
     // Billing
@@ -95,7 +96,7 @@ public class OrderBuilder {
     }
     
     // Step 3: Shipping information
-    public OrderBuilder withShipping(String shippingAddress, String shippingMethod, BigDecimal shippingCost) {
+    public OrderBuilder withShipping(String shippingAddress, ShippingMethod shippingMethod, BigDecimal shippingCost) {
         this.shippingAddress = shippingAddress;
         this.shippingMethod = shippingMethod;
         this.shippingCost = shippingCost;

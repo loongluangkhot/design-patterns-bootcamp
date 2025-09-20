@@ -15,15 +15,11 @@ import java.util.concurrent.atomic.AtomicLong;
  * In a real application, this would use JDBC or JPA to connect to MySQL.
  * 
  * For this demo, we'll simulate MySQL operations with in-memory storage.
- * 
- * TODO: Implement the MySQL-specific database operations
  */
 public class MySQLDatabaseImplementation implements DatabaseImplementation {
     
     private final String connectionString;
     private final String username;
-    private final String password;
-    
     // Simulate database tables with in-memory storage
     private final ConcurrentHashMap<String, Product> products = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, Order> orders = new ConcurrentHashMap<>();
@@ -35,7 +31,6 @@ public class MySQLDatabaseImplementation implements DatabaseImplementation {
     public MySQLDatabaseImplementation(String connectionString, String username, String password) {
         this.connectionString = connectionString;
         this.username = username;
-        this.password = password;
     }
     
     // ===== Connection Management =====

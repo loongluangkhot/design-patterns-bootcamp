@@ -2,6 +2,7 @@ package com.labrise.designpatterns.adapter;
 
 import com.labrise.designpatterns.payment.PaymentMethod;
 import com.labrise.designpatterns.models.Order;
+import com.labrise.designpatterns.facade.ShippingMethod;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -70,7 +71,7 @@ public class AdapterPatternDemo {
             List.of(), // items
             new BigDecimal("99.99"), // subtotal
             "123 Main St, City, State 12345",
-            "Standard Shipping",
+            ShippingMethod.STANDARD,
             new BigDecimal("9.99"), // shipping cost
             "123 Main St, City, State 12345", // billing address
             "Credit Card",
@@ -114,7 +115,7 @@ public class AdapterPatternDemo {
             List.of(), // items
             new BigDecimal("50.00"), // subtotal
             "456 Oak Ave, City, State 54321",
-            "Standard Shipping",
+            ShippingMethod.STANDARD,
             new BigDecimal("5.00"), // shipping cost
             "456 Oak Ave, City, State 54321", // billing address
             "Credit Card",
@@ -159,7 +160,7 @@ public class AdapterPatternDemo {
             List.of(), // items
             new BigDecimal("199.99"), // subtotal
             "789 Pine St, City, State 67890",
-            "Express Shipping",
+            ShippingMethod.EXPRESS,
             new BigDecimal("15.00"), // shipping cost
             "789 Pine St, City, State 67890", // billing address
             "Credit Card",

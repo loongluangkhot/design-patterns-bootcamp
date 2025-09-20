@@ -1,7 +1,5 @@
 package com.labrise.designpatterns.adapter;
 
-import java.math.BigDecimal;
-
 /**
  * Third-party Payment Gateway (External Service)
  * 
