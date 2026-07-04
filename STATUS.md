@@ -15,16 +15,16 @@ TEMPLATE RULES:
 - Abstract Factory Pattern ⏳
 
 ### Day 2: Builder Pattern ⏳
-- Order Builder ⏳
-- Product Configuration Builder ⏳
+- Trade Order Builder ⏳
+- Structured Product Builder ⏳
 
 ### Day 3: Prototype Pattern ⏳
-- Product Template Cloning ⏳
-- Shopping Cart State Copying ⏳
+- Model Basket Cloning ⏳
+- Working-Basket State Snapshot ⏳
 
 ### Day 4: Singleton Pattern ⏳
-- Database Connection Manager ⏳
-- Application Configuration ⏳
+- Market-Data Connection Manager ⏳
+- Trading Configuration ⏳
 
 ### Day 5: Review & Integration ⏳
 - Pattern Integration ⏳
@@ -33,19 +33,19 @@ TEMPLATE RULES:
 
 ### Day 1: Adapter & Bridge ⏳
 - Third-party Payment Gateway Adapters ⏳
-- Database Abstraction Bridge ⏳
+- Market-Data Source Bridge ⏳
 
 ### Day 2: Composite & Decorator ⏳
-- Category Hierarchy (Composite) ⏳
-- Product Pricing Decorators ⏳
+- Account Hierarchy (Composite) ⏳
+- Fee & Tax Pricing Decorators ⏳
 
 ### Day 3: Facade & Flyweight ⏳
-- Checkout Process Facade ⏳
-- Product Image Flyweight ⏳
+- Trade Settlement Facade ⏳
+- Instrument Reference-Data Flyweight ⏳
 
 ### Day 4: Proxy Pattern ⏳
-- Lazy Loading Proxy ⏳
-- Caching Proxy ⏳
+- Lazy-Loading Statement Proxy ⏳
+- Caching Market-Data Proxy ⏳
 
 ### Day 5: Review & Integration ⏳
 - Structural Optimization ⏳
@@ -54,15 +54,15 @@ TEMPLATE RULES:
 
 ### Day 1: Chain of Responsibility & Command ⏳
 - Order Validation Chain ⏳
-- Undo/Redo for Cart Operations ⏳
+- Undo/Redo for Order Blotter ⏳
 
 ### Day 2: Interpreter & Iterator ⏳
-- Discount Rule Interpreter ⏳
-- Product Collection Iterators ⏳
+- Fee Rule Interpreter ⏳
+- Position Collection Iterators ⏳
 
 ### Day 3: Mediator & Memento ⏳
 - Order Processing Mediator ⏳
-- Shopping Cart State Memento ⏳
+- Order Ticket State Memento ⏳
 
 ### Day 4: Practice & Implementation ⏳
 - Pattern Integration ⏳
@@ -77,8 +77,8 @@ TEMPLATE RULES:
 - Order State Machine ⏳
 
 ### Day 2: Strategy & Template Method ⏳
-- Shipping Calculation Strategies ⏳
-- Report Generation Template ⏳
+- Fee Calculation Strategies ⏳
+- Regulatory Report Template ⏳
 
 ### Day 3: Visitor Pattern ⏳
 - Order Analytics Visitor ⏳
@@ -88,7 +88,7 @@ TEMPLATE RULES:
 - Pattern Interactions ⏳
 
 ### Day 5: Final Project Completion ⏳
-- Full E-commerce Platform ⏳
+- Full Trading Platform ⏳
 
 ---
 
