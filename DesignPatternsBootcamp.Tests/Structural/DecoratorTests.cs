@@ -1,3 +1,18 @@
+// ============================================================================
+//  STEP 1 OF THIS KATA — UNCOMMENT THESE TESTS.
+//
+//  They ship commented out so the rest of the test project still builds before
+//  you start. To begin this kata: delete the "/*" on the line just below AND
+//  the "*/" on the very last line of this file, then run:
+//
+//      dotnet test --filter "FullyQualifiedName~Decorator"
+//
+//  It will FAIL TO BUILD at first — that is expected. Each compiler error
+//  ("the type or namespace 'BaseTrade' could not be found", …) is an item on
+//  your to-do list: a type you must create yourself. See this kata's README.md
+//  for the target API. Keep building until it compiles, then turns green.
+// ============================================================================
+/* 
 using DesignPatternsBootcamp.Structural.Decorator;
 using DesignPatternsBootcamp.Structural.Decorator.Legacy;
 
@@ -6,7 +21,7 @@ namespace DesignPatternsBootcamp.Tests.Structural;
 public class DecoratorTests
 {
     // -----------------------------------------------------------------------------------------
-    //  Legacy baseline — already PASSING. Charges applied via a wall of boolean flags, fixed order.
+    //  Legacy baseline — passes as soon as you uncomment (LegacyTradePricer is provided).
     // -----------------------------------------------------------------------------------------
 
     [Fact]
@@ -20,7 +35,7 @@ public class DecoratorTests
     }
 
     // -----------------------------------------------------------------------------------------
-    //  Your refactor — RED until the three decorators are implemented.
+    //  Your build — RED (and, at first, won't compile) until you create the types below.
     // -----------------------------------------------------------------------------------------
 
     [Fact]
@@ -75,3 +90,4 @@ public class DecoratorTests
         Assert.NotEqual(taxThenFee.Total(), feeThenTax.Total());
     }
 }
+ */

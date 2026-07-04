@@ -2,6 +2,7 @@
 
 > **Week 2 · Day 2a · Structural**
 > Run just this kata: `dotnet test --filter "FullyQualifiedName~Composite"`
+> **This is a build-from-scratch kata:** you create every type yourself. Nothing is stubbed.
 
 ## The scenario
 
@@ -65,17 +66,38 @@ classDiagram
 That self-referential arrow (`Portfolio` holds many `IPortfolioComponent`, which a `Portfolio`
 *is*) is the whole pattern: branches contain components, and a branch is itself a component.
 
-## Your task
+## Target API — what the (commented-out) tests expect
 
-Implement `MarketValue()` in [`PortfolioComponents.cs`](./PortfolioComponents.cs):
+You must create these types so the tests compile and pass. **Names and constructor signatures are
+fixed by the tests; everything inside is your design.**
 
-1. **`Position.MarketValue()`** — `Quantity × Price`.
-2. **`Portfolio.MarketValue()`** — the **sum of `MarketValue()` over `Children`**. One line; it
-   recurses through the whole tree because each child knows how to value itself.
+| Type | Shape | Behaviour the tests pin down |
+|------|-------|------------------------------|
+| `IPortfolioComponent` | interface: `string Name { get; }`, `decimal MarketValue()` | the common type for leaf **and** branch |
+| `Position` | `Position(string symbol, int quantity, decimal price)` — implements `IPortfolioComponent` | the leaf; `MarketValue()` = `quantity × price` (e.g. `10 × 150 = 1500`) |
+| `Portfolio` | `Portfolio(string name)` — implements `IPortfolioComponent`; `Portfolio Add(IPortfolioComponent child)` | the composite; `Add` returns `this` so calls chain; `MarketValue()` = the **sum** of its children's `MarketValue()` |
 
-```bash
-dotnet test --filter "FullyQualifiedName~Composite"
-```
+`Add` returning the `Portfolio` is what lets the tests write `new Portfolio("…").Add(…).Add(…)`.
+Because a child may itself be a `Portfolio`, one `MarketValue()` recurses the whole tree with no
+special case.
+
+**Provided (do not edit):** the [`Legacy/`](./Legacy/) baseline — `LegacyHolding`, `LegacyPortfolio`,
+`LegacyValuation` (the two-list, hand-rolled recursion you are replacing). Everything in the table
+above you build.
+
+## Your task (from scratch)
+
+1. **Uncomment the tests.** In [`CompositeTests.cs`](../../../DesignPatternsBootcamp.Tests/Structural/CompositeTests.cs)
+   delete the `/*` and `*/`. Now `dotnet test --filter "FullyQualifiedName~Composite"` **won't
+   compile** — that's step one done. Each "type or namespace could not be found" is a type on your
+   checklist. (The `Legacy_valuation…` test already passes against the provided baseline.)
+2. **Create the component.** Add a new `.cs` file; define `IPortfolioComponent` with `Name` and
+   `MarketValue()` — the single type a leaf and a branch will share.
+3. **Create the leaf.** `Position` holds symbol/quantity/price and values itself. Get
+   `Position_value_is_quantity_times_price` green.
+4. **Create the composite.** `Portfolio` keeps a list of children, `Add` appends one and returns
+   `this`, and `MarketValue()` sums the children — letting the recursion happen for free.
+5. **Green.** `dotnet test --filter "FullyQualifiedName~Composite"`.
 
 `A_leaf_and_a_branch_are_interchangeable` puts a `Position` and a `Portfolio` in the same parent —
 proof the client no longer cares which is which.
@@ -100,6 +122,7 @@ proof the client no longer cares which is which.
 
 ## Done when
 
-- [ ] `Position.MarketValue()` and `Portfolio.MarketValue()` are implemented.
+- [ ] You created `IPortfolioComponent`, `Position` (leaf), and `Portfolio` (composite) from scratch.
+- [ ] `Add` chains, and `MarketValue()` sums children with no branch-vs-leaf special case.
 - [ ] `dotnet test --filter "FullyQualifiedName~Composite"` is fully green.
 - [ ] You can explain why `Portfolio.MarketValue()` needs no special case for nested portfolios.

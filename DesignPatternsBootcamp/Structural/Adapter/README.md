@@ -2,6 +2,7 @@
 
 > **Week 2 · Day 1a · Structural**
 > Run just this kata: `dotnet test --filter "FullyQualifiedName~Adapter"`
+> **This is a build-from-scratch kata:** you create every type yourself. Nothing is stubbed.
 
 ## The scenario
 
@@ -73,19 +74,37 @@ classDiagram
 The adapter **has-a** adaptee (object adapter, via composition) and **is-a** target (implements the
 interface). That composition is what lets it translate.
 
-## Your task
+## Target API — what the (commented-out) tests expect
 
-Implement the two adapters in [`Adapters.cs`](./Adapters.cs).
+You must create these types so the tests compile and pass. **Names and constructor signatures are
+fixed by the tests; everything inside is your design.**
 
-1. **`AcmePayAdapter.Charge`** — build an `AcmeRequest`, call `SubmitPayment`, and map the
-   `AcmeResponse` to a `GatewayResult` (`Approved = Ok`, `Reference = AcmeTxnId`).
-2. **`GlobalPayAdapter.Charge`** — convert dollars to **integer cents**, call `Pay(..., out var code)`,
-   and map the result (`Reference = code`). The `Global_adapter_converts_dollars_to_integer_cents`
-   test checks that `123.45 → 12345`.
-3. Run the tests:
-   ```bash
-   dotnet test --filter "FullyQualifiedName~Adapter"
-   ```
+| Type | Shape | Behaviour the tests pin down |
+|------|-------|------------------------------|
+| `IPaymentGateway` | interface: `GatewayResult Charge(decimal amount, string currency, string account)` | the target interface the whole app codes against |
+| `GatewayResult` | carries `bool Approved`, `string Reference`, `decimal AmountCharged`, `string Currency` | the one uniform result shape every gateway returns |
+| `AcmePayAdapter` | `AcmePayAdapter(AcmePayClient client)` — implements `IPaymentGateway` | wraps AcmePay: builds an `AcmeRequest`, submits it, maps `Ok → Approved`, `AcmeTxnId → Reference`, echoes the dollar amount/currency |
+| `GlobalPayAdapter` | `GlobalPayAdapter(GlobalPayApi api)` — implements `IPaymentGateway` | wraps GlobalPay: converts **dollars → integer cents**, calls `Pay(..., out var code)`, maps `code → Reference` |
+
+**Provided (do not edit):** the "unchangeable" third-party SDKs in [`ThirdPartySdks.cs`](./ThirdPartySdks.cs)
+— `AcmeRequest`, `AcmeResponse`, `AcmePayClient`, `GlobalPayApi` (namespace `…Adapter.ThirdParty`) —
+and the [`Legacy/`](./Legacy/) baseline. Everything else in the table above you build.
+
+## Your task (from scratch)
+
+1. **Uncomment the tests.** In [`AdapterTests.cs`](../../../DesignPatternsBootcamp.Tests/Structural/AdapterTests.cs)
+   delete the `/*` and `*/`. Now `dotnet test --filter "FullyQualifiedName~Adapter"` **won't
+   compile** — that's step one done. Each "type or namespace could not be found" is a type on your
+   checklist. (The `Legacy_checkout…` test already passes; it exercises the provided baseline.)
+2. **Create the target.** Add a new `.cs` file in this folder; define `IPaymentGateway` and the
+   `GatewayResult` it returns. This is the shape your app wants — invented by you, owned by you.
+3. **Create `AcmePayAdapter`.** Wrap an `AcmePayClient`; in `Charge`, build an `AcmeRequest`, call
+   `SubmitPayment`, and map the `AcmeResponse` back onto a `GatewayResult` (`Ok → Approved`,
+   `AcmeTxnId → Reference`). Get `Acme_adapter_exposes_the_sdk_as_an_IPaymentGateway` green.
+4. **Create `GlobalPayAdapter`.** Wrap a `GlobalPayApi`; convert dollars to **integer cents**, call
+   `Pay(..., out var code)`, and map the result. The
+   `Global_adapter_converts_dollars_to_integer_cents` test proves `123.45 → 12345`.
+5. **Green.** `dotnet test --filter "FullyQualifiedName~Adapter"`.
 
 Notice the pay-off in `Both_providers_can_be_treated_uniformly…`: once wrapped, both live in a
 `List<IPaymentGateway>` and the client stops caring which vendor is which.
@@ -110,6 +129,7 @@ Notice the pay-off in `Both_providers_can_be_treated_uniformly…`: once wrapped
 
 ## Done when
 
-- [ ] Both adapters are implemented and translate arguments/results correctly.
+- [ ] You created `IPaymentGateway`, `GatewayResult`, and both adapters from scratch.
+- [ ] Each adapter translates arguments/results correctly (watch the `$ → ¢` conversion).
 - [ ] `dotnet test --filter "FullyQualifiedName~Adapter"` is fully green.
 - [ ] You can explain why the client can now hold providers in a `List<IPaymentGateway>`.

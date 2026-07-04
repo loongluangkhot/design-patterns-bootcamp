@@ -2,6 +2,7 @@
 
 > **Week 4 · Day 1b · Behavioral**
 > Run just this kata: `dotnet test --filter "FullyQualifiedName~State"`
+> **This is a build-from-scratch kata:** you create every type yourself. Nothing is stubbed.
 
 ## The scenario
 
@@ -82,20 +83,41 @@ classDiagram
 > put; a **State** changes itself as part of the object's lifecycle (the transitions live in the
 > states).
 
-## Your task
+## Target API — what the (commented-out) tests expect
 
-Implement `Fill`/`Cancel` for the four states in [`OrderStates.cs`](./OrderStates.cs) (the `Name`s
-are provided):
+You must create these types so the tests compile and pass. **Names and constructor signatures are
+fixed by the tests; everything inside is your design.**
 
-1. **`NewState` / `PartiallyFilledState` `Fill`** — add to `context.FilledQuantity`, then set
-   `context.State` to `FilledState` if fully filled, else `PartiallyFilledState`.
-2. **`NewState` / `PartiallyFilledState` `Cancel`** — set `context.State` to `CancelledState`.
-3. **`FilledState` / `CancelledState`** — both operations are illegal; throw
-   `InvalidOperationException`.
+| Type | Shape | Behaviour the tests pin down |
+|------|-------|------------------------------|
+| `OrderContext` | `OrderContext(int quantity)`; `string Status`; `int FilledQuantity`; `void Fill(int)`; `void Cancel()` (plus a mutable current `State` and the target `Quantity` the states read/advance) | delegates `Fill`/`Cancel` to its current state; `Status` reads the state's name; starts in `NewState` |
+| `IOrderState` | interface: `string Name`, `void Fill(OrderContext, int)`, `void Cancel(OrderContext)` | one state's behaviour + its transitions |
+| `NewState` | `IOrderState`, `Name` = `"New"` | `Fill` → PartiallyFilled/Filled; `Cancel` → Cancelled |
+| `PartiallyFilledState` | `IOrderState`, `Name` = `"PartiallyFilled"` | same transitions as `NewState` |
+| `FilledState` | `IOrderState`, `Name` = `"Filled"` | both operations throw `InvalidOperationException` |
+| `CancelledState` | `IOrderState`, `Name` = `"Cancelled"` | both operations throw `InvalidOperationException` |
 
-```bash
-dotnet test --filter "FullyQualifiedName~State"
-```
+**Provided (don't recreate):** only the `Legacy/` baseline (`LegacyOrder`). The context, the state
+interface, and all four state classes are yours to build.
+
+## Your task (from scratch)
+
+1. **Uncomment the tests.** In [`StateTests.cs`](../../../DesignPatternsBootcamp.Tests/Behavioral/StateTests.cs)
+   delete the `/*` and `*/`. Now `dotnet test --filter "FullyQualifiedName~State"` **won't compile** —
+   `OrderContext`, `IOrderState` and the four state classes don't exist yet. Each build error is the
+   next type to create.
+2. **Build the context.** Add a new `.cs` file; define `OrderContext(int quantity)` holding the target
+   `Quantity`, the `FilledQuantity` so far, and a mutable current state. `Status` returns the current
+   state's `Name`; `Fill`/`Cancel` delegate straight to the current state; a fresh context starts in
+   `NewState`.
+3. **Define the state interface.** Declare `IOrderState` with a `Name`, a `Fill(context, quantity)`,
+   and a `Cancel(context)`.
+4. **Implement the working states.** In `NewState` and `PartiallyFilledState`, `Fill` adds to the
+   context's `FilledQuantity`, then points the context at `FilledState` when fully filled, otherwise
+   `PartiallyFilledState`; `Cancel` points it at `CancelledState`.
+5. **Implement the terminal states.** In `FilledState` and `CancelledState`, both `Fill` and `Cancel`
+   are illegal — throw `InvalidOperationException`.
+6. **Green.** `dotnet test --filter "FullyQualifiedName~State"`.
 
 ### Stretch goals
 
@@ -118,6 +140,6 @@ dotnet test --filter "FullyQualifiedName~State"
 
 ## Done when
 
-- [ ] All four states implement `Fill` and `Cancel`.
+- [ ] You built `OrderContext`, `IOrderState`, and all four state classes from scratch.
 - [ ] `dotnet test --filter "FullyQualifiedName~State"` is fully green.
 - [ ] You can explain how adding a new state avoids editing the other states' code.

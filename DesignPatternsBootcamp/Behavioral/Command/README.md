@@ -2,6 +2,7 @@
 
 > **Week 3 · Day 1b · Behavioral**
 > Run just this kata: `dotnet test --filter "FullyQualifiedName~Command"`
+> **This is a build-from-scratch kata:** you create every type yourself. Nothing is stubbed.
 
 ## The scenario
 
@@ -81,23 +82,37 @@ classDiagram
     AmendQuantityCommand --> Blotter : receiver
 ```
 
-## Your task
+## Target API — what the (commented-out) tests expect
 
-Implement `Execute` and `Undo` for the three commands in [`Commands.cs`](./Commands.cs). The receiver
-(`Blotter`) and the invoker (`BlotterHistory`) are provided.
+You must create these types so the tests compile and pass. **Names and constructor signatures are
+fixed by the tests; everything inside is your design.**
 
-1. **`AddOrderCommand`** — Execute adds `_order`; Undo removes it by `Id`.
-2. **`CancelOrderCommand`** — Execute stashes the found order in `_removed`, then removes it; Undo
-   adds `_removed` back.
-3. **`AmendQuantityCommand`** — Execute saves the current quantity in `_previousQuantity`, then sets
-   the new one; Undo restores `_previousQuantity`.
+| Type | Shape | Behaviour the tests pin down |
+|------|-------|------------------------------|
+| `AddOrderCommand` | `AddOrderCommand(Blotter blotter, Order order)` — implements `ICommand` | `Execute` adds the order; `Undo` removes it again |
+| `CancelOrderCommand` | `CancelOrderCommand(Blotter blotter, string id)` — implements `ICommand` | `Execute` captures the order then removes it; `Undo` restores it **intact** (same quantity) |
+| `AmendQuantityCommand` | `AmendQuantityCommand(Blotter blotter, string id, int newQuantity)` — implements `ICommand` | `Execute` saves the old quantity then sets the new one; `Undo` restores the old quantity |
+| `BlotterHistory` | `BlotterHistory()`, `Do(ICommand)`, `Undo()`, `Redo()` | the **invoker**: `Do` runs a command and records it; `Undo` reverses the last; `Redo` reapplies the last undone; undo walks multiple actions back in order |
 
-```bash
-dotnet test --filter "FullyQualifiedName~Command"
-```
+**Provided (do not create):** `Order` (mutable quantity), the `Blotter` **receiver**
+(`Add`/`Remove`/`Find`/`Count`), and the `ICommand` interface (`Execute`/`Undo`) — all in
+[`Blotter.cs`](./Blotter.cs) — plus `LegacyBlotter` under [`Legacy/`](./Legacy/).
 
-`Undo_walks_multiple_actions_back_in_order` shows the payoff: because every action is a command on a
-stack, multi-level undo/redo comes from the (provided) invoker for free.
+## Your task (from scratch)
+
+1. **Uncomment the tests.** In [`CommandTests.cs`](../../../DesignPatternsBootcamp.Tests/Behavioral/CommandTests.cs)
+   delete the `/*` and `*/`. Now `dotnet test --filter "FullyQualifiedName~Command"` **won't
+   compile** — that's step one done. Each "type or namespace could not be found" error is a type on
+   your to-do list.
+2. **Create the three commands.** Add a new `.cs` file; write `AddOrderCommand`, `CancelOrderCommand`,
+   and `AmendQuantityCommand`, each implementing `ICommand` over the provided `Blotter`. The key move:
+   **capture whatever you need to reverse the action before you mutate** (the cancelled order; the
+   previous quantity).
+3. **Create the invoker.** Write `BlotterHistory` with `Do`, `Undo`, and `Redo` — two stacks behind
+   the scenes, and a fresh `Do` must clear the redo stack. `Undo_walks_multiple_actions_back_in_order`
+   pins the multi-level behaviour: because every action is a command on a stack, deep undo/redo falls
+   out for free.
+4. **Green.** `dotnet test --filter "FullyQualifiedName~Command"`.
 
 ### Stretch goals
 
@@ -119,6 +134,6 @@ stack, multi-level undo/redo comes from the (provided) invoker for free.
 
 ## Done when
 
-- [ ] All three commands implement `Execute` and `Undo`.
+- [ ] You created the three commands and the `BlotterHistory` invoker from scratch.
 - [ ] `dotnet test --filter "FullyQualifiedName~Command"` is fully green.
 - [ ] You can explain why each command captures reversal state *before* mutating.

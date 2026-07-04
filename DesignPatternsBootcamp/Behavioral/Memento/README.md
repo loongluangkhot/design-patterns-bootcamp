@@ -2,6 +2,7 @@
 
 > **Week 3 · Day 3b · Behavioral**
 > Run just this kata: `dotnet test --filter "FullyQualifiedName~Memento"`
+> **This is a build-from-scratch kata:** you create every type yourself. Nothing is stubbed.
 
 ## The scenario
 
@@ -68,22 +69,38 @@ classDiagram
     note for Memento "state is internal —\nonly the originator reads it"
 ```
 
-## Your task
+## Target API — what the (commented-out) tests expect
 
-Implement the two methods in [`OrderTicket.cs`](./OrderTicket.cs):
+You must create these types so the tests compile and pass. **Names and constructor signatures are
+fixed by the tests; everything inside is your design.**
 
-1. **`Save()`** — `return new Memento(Symbol, Quantity, Price);`
-2. **`Restore(memento)`** — copy `memento.Symbol/Quantity/Price` back into this ticket.
+| Type | Shape | Behaviour the tests pin down |
+|------|-------|------------------------------|
+| `OrderTicket` | `OrderTicket(string symbol, int quantity, decimal price)`; settable `Symbol`/`Quantity`/`Price`; `Memento Save()`; `void Restore(Memento)` | the originator — snapshots itself and restores itself |
+| `OrderTicket.Memento` | nested type carrying a symbol/quantity/price snapshot; its state is **internal** (readable only inside the originator's assembly) | the opaque token callers hold but cannot read or forge |
+| `TicketHistory` | `void Save(OrderTicket)`, `void Undo(OrderTicket)`, `int Count` | the caretaker — an undo stack of mementos it never looks inside |
 
-(Both live inside `OrderTicket`, so they're allowed to touch the memento's `internal` state — no one
-else is.)
+**Provided (don't recreate):** only the `Legacy/` baseline (`LegacyTicket` + its test). Everything the
+new tests touch — `OrderTicket`, its nested `Memento`, and `TicketHistory` — is yours to build.
 
-```bash
-dotnet test --filter "FullyQualifiedName~Memento"
-```
+## Your task (from scratch)
 
-The provided `TicketHistory` caretaker gives you multi-level undo the moment `Save`/`Restore` work —
-and notice it never reads a memento's fields.
+1. **Uncomment the tests.** In [`MementoTests.cs`](../../../DesignPatternsBootcamp.Tests/Behavioral/MementoTests.cs)
+   delete the `/*` and `*/`. Now `dotnet test --filter "FullyQualifiedName~Memento"` **won't compile** —
+   `OrderTicket`, `OrderTicket.Memento` and `TicketHistory` don't exist yet. Each build error is the
+   next type to create.
+2. **Build the originator.** Add a new `.cs` file in this folder; define `OrderTicket` with a constructor
+   and mutable `Symbol`/`Quantity`/`Price`. Nest a `Memento` type inside it that carries a snapshot of
+   those three values, and keep the memento's state `internal` so nothing outside the originator's
+   assembly can read it.
+3. **Snapshot and restore.** Give `OrderTicket` a `Save()` that returns a new memento of its current
+   state, and a `Restore(memento)` that copies a memento's state back in. Both live inside `OrderTicket`,
+   so they're the only code allowed to touch the memento's internals. Get
+   `Save_then_restore_rolls_the_ticket_back` green.
+4. **Build the caretaker.** Add `TicketHistory`: `Save(ticket)` pushes the ticket's memento onto a stack
+   (`Count` reflects its size); `Undo(ticket)` pops the last memento and restores the ticket from it —
+   without ever reading the memento's fields. Get the multi-level-undo test green.
+5. **Green.** `dotnet test --filter "FullyQualifiedName~Memento"`.
 
 ### Stretch goals
 
@@ -105,6 +122,6 @@ and notice it never reads a memento's fields.
 
 ## Done when
 
-- [ ] `Save` and `Restore` are implemented.
+- [ ] You built `OrderTicket` (with its nested `Memento`) and `TicketHistory` from scratch.
 - [ ] `dotnet test --filter "FullyQualifiedName~Memento"` is fully green.
 - [ ] You can explain why the caretaker can hold a memento but not read it.

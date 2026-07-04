@@ -2,7 +2,10 @@
 
 > **Week 3 · Day 5 · Behavioral**
 > Run just this kata: `dotnet test --filter "FullyQualifiedName~BehavioralIntegration"`
-> **Prerequisites:** finish **Day 1a (Chain of Responsibility)** and **Day 1b (Command)** first.
+> **This is a build-from-scratch kata:** the capstone's whole source was deleted — you build the
+> composing `OrderProcessingWorkflow` yourself. Nothing here is stubbed.
+> **Prerequisites:** finish **Day 1a (Chain of Responsibility)** and **Day 1b (Command)** first — this
+> capstone drives both, so it won't compile until their types exist.
 
 ## Goal
 
@@ -12,19 +15,36 @@ patterns:
 - **Chain of Responsibility** runs the order through the validation pipeline.
 - **Command** places an approved order as an **undoable** action.
 
-## The exercise
+## Target API — what the (commented-out) tests expect
 
-Implement `OrderProcessingWorkflow.Place(...)` in
-[`OrderProcessingWorkflow.cs`](./OrderProcessingWorkflow.cs):
+This is a capstone: you create the composing types below, and they *drive* types you already built in
+the prerequisite katas. **Names and signatures are fixed by the tests; the wiring inside is your
+design.**
 
-1. **Validate** — `_validationChain.Validate(new Cor.Order(symbol, quantity, price))`. If it isn't
-   approved, return `new PlacementResult(false, result.Reason)` and place nothing.
-2. **Place (undoably)** — `_history.Do(new Cmd.AddOrderCommand(_blotter, new Cmd.Order(id, symbol,
-   quantity)))`, then return `new PlacementResult(true, null)`.
+| Type (you create) | Shape | Behaviour the tests pin down |
+|-------------------|-------|------------------------------|
+| `OrderProcessingWorkflow` | `OrderProcessingWorkflow(head, Blotter blotter, BlotterHistory history)` where `head` is the front of the validation chain; `PlacementResult Place(string id, string symbol, int quantity, decimal price)` | validates the order through the chain; if rejected, returns `PlacementResult(false, reason)` and places nothing; if approved, runs an undoable `AddOrderCommand` through the history and returns `PlacementResult(true, null)` |
+| `PlacementResult` | `PlacementResult(bool Placed, string? Reason)` | `.Placed` says whether it reached the blotter; `.Reason` carries the chain's rejection message (else `null`) |
 
-```bash
-dotnet test --filter "FullyQualifiedName~BehavioralIntegration"
-```
+**Provided:** only this README — both capstone types are yours to write. The **dependency types come
+from the prerequisite katas**: the validator handlers `PositiveQuantityValidator` /
+`NotionalLimitValidator` / `RestrictedSymbolValidator` and `Order` (Chain of Responsibility, Day 1a);
+`Blotter` / `BlotterHistory` / `AddOrderCommand` / `Order` (Command, Day 1b). If either isn't done,
+this won't compile.
+
+## Your task (from scratch)
+
+1. **Uncomment the tests.** In [`BehavioralIntegrationTests.cs`](../../../DesignPatternsBootcamp.Tests/Behavioral/BehavioralIntegrationTests.cs)
+   delete the `/*` and `*/`. Now `dotnet test --filter "FullyQualifiedName~BehavioralIntegration"`
+   **won't compile** — that's step one done. Missing-type errors point at both this capstone's types
+   *and* any prerequisite (Chain/Command) type you haven't built yet.
+2. **Create `PlacementResult`.** A small type holding `Placed` and an optional `Reason`.
+3. **Create `OrderProcessingWorkflow` and `Place`.** Compose the two patterns:
+   - **Validate** — run the order through the chain (`Validate(new Cor.Order(symbol, quantity, price))`).
+     If it isn't approved, return `PlacementResult(false, reason)` and place nothing.
+   - **Place (undoably)** — push an `AddOrderCommand(blotter, new Cmd.Order(id, symbol, quantity))`
+     through the `BlotterHistory`, then return `PlacementResult(true, null)`.
+4. **Green.** `dotnet test --filter "FullyQualifiedName~BehavioralIntegration"`.
 
 The three tests show the whole story: a clean order lands on the blotter; a restricted order is
 stopped by the chain and never becomes a command; and a placed order can be rolled back through the
@@ -68,7 +88,8 @@ commands, grammars, iterators, hubs, and snapshots.
 
 ## Done when
 
-- [ ] `Place` validates via the chain, then places via an undoable command.
+- [ ] You built `PlacementResult` and `OrderProcessingWorkflow.Place` from scratch; `Place` validates
+      via the chain, then places via an undoable command (both prerequisite katas done first).
 - [ ] `dotnet test --filter "FullyQualifiedName~BehavioralIntegration"` is green.
 - [ ] You can explain why a rejected order results in `blotter.Count == 0`.
 

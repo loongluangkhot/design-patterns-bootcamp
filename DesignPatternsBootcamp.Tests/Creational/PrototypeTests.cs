@@ -1,3 +1,13 @@
+// ============================================================================
+//  STEP 1 OF THIS KATA — UNCOMMENT THESE TESTS.
+//  They ship commented out so the rest of the test project still builds before
+//  you start this kata. To begin: delete the "/*" on the line below AND the
+//  "*/" on the very last line, then run this kata's tests (its README has the
+//  filter + the target API). It will NOT compile at first — that is expected:
+//  each "type or namespace ... could not be found" error is a type you must
+//  create yourself. Build until it compiles, then turns green.
+// ============================================================================
+/*
 using DesignPatternsBootcamp.Creational.Prototype;
 using DesignPatternsBootcamp.Creational.Prototype.Legacy;
 
@@ -23,8 +33,17 @@ public class PrototypeTests
     [Fact]
     public void Legacy_shallow_copy_leaks_mutations_back_to_the_template()
     {
-        ModelBasket template = SampleTemplate();
-        ModelBasket copy = new LegacyBasketCloner().Copy(template);
+        // The legacy world has its own basket types (see Legacy/LegacyBasketCloner.cs).
+        var template = new LegacyBasket
+        {
+            Name = "Balanced Model",
+            Lines =
+            [
+                new LegacyOrderLine { Symbol = "VTI", Quantity = 60 },
+                new LegacyOrderLine { Symbol = "BND", Quantity = 40 },
+            ],
+        };
+        LegacyBasket copy = new LegacyBasketCloner().Copy(template);
 
         copy.Lines[0].Quantity = 999; // tweak only the "copy"...
 
@@ -99,3 +118,4 @@ public class PrototypeTests
         Assert.Equal(60, b.Lines[0].Quantity); // b is untouched by edits to a
     }
 }
+*/

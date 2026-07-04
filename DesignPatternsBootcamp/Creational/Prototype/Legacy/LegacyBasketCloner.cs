@@ -1,22 +1,33 @@
 namespace DesignPatternsBootcamp.Creational.Prototype.Legacy;
 
+// The legacy world uses its OWN basket types (independent of the pattern you build), so this "before"
+// code stands on its own.
+
+public sealed class LegacyOrderLine
+{
+    public required string Symbol { get; set; }
+    public required int Quantity { get; set; }
+}
+
+public sealed class LegacyBasket
+{
+    public required string Name { get; set; }
+    public required List<LegacyOrderLine> Lines { get; set; }
+}
+
 /// <summary>
-/// THE "BEFORE" CODE — the desk tried to "copy" a template so each client could get a tweaked
-/// version. But this copy is <b>shallow</b>: it copies the scalar fields and then reuses the very
-/// same <c>Lines</c> list (and the same <c>OrderLine</c> objects inside it).
+/// THE "BEFORE" CODE — it "copies" a basket by copying the scalar fields and REUSING the same
+/// <c>Lines</c> list (and the same <c>LegacyOrderLine</c> objects inside it).
 ///
-/// The result is a landmine: editing a client's "copy" reaches back and mutates the master
-/// template — and every other client cloned from it. The test
-/// <c>Legacy_shallow_copy_leaks_mutations_back_to_the_template</c> documents the bug on purpose.
-///
-/// Prototype fixes this by giving each object a <c>DeepClone</c> that copies all the way down.
+/// That is a <b>shallow copy</b>, and it is a landmine: editing the "copy" reaches back and mutates
+/// the original — and every other basket cloned from it. The Prototype pattern fixes this by giving
+/// each object a <c>DeepClone</c> that copies all the way down.
 /// </summary>
 public sealed class LegacyBasketCloner
 {
-    public ModelBasket Copy(ModelBasket basket) => new()
+    public LegacyBasket Copy(LegacyBasket basket) => new()
     {
         Name = basket.Name,
-        Strategy = basket.Strategy,
-        Lines = basket.Lines, // BUG: shares the list reference and every OrderLine in it.
+        Lines = basket.Lines, // BUG: shares the list reference and every LegacyOrderLine in it.
     };
 }

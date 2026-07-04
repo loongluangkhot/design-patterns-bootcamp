@@ -2,6 +2,7 @@
 
 > **Week 3 · Day 3a · Behavioral**
 > Run just this kata: `dotnet test --filter "FullyQualifiedName~Mediator"`
+> **This is a build-from-scratch kata:** you create every type yourself. Nothing is stubbed.
 
 ## The scenario
 
@@ -63,21 +64,39 @@ classDiagram
     note for TradingDeskMediator "Colleagues connect to the hub,\nnot to one another."
 ```
 
-## Your task
+## Target API — what the (commented-out) tests expect
 
-Implement `Submit` in [`TradingDeskMediator.cs`](./TradingDeskMediator.cs):
+You must create these types so the tests compile and pass. **Names and constructor signatures are
+fixed by the tests; everything inside is your design.**
 
-1. Ask `_risk.Approve(order, out var reason)`. If it fails → notify `$"Order {order.Id} rejected:
-   {reason}"` and return an un-executed `OrderOutcome` carrying the reason. **Don't** call execution.
-2. Otherwise execute (`_execution.Execute` returns a reference), notify `$"Order {order.Id} executed:
-   {executionRef}"`, and return an executed outcome with that reference.
+| Type | Shape | Behaviour the tests pin down |
+|------|-------|------------------------------|
+| `IDeskMediator` | interface: `OrderOutcome Submit(Order order)` | the hub clients (and colleagues) depend on |
+| `TradingDeskMediator` | `TradingDeskMediator(RiskComponent risk, ExecutionComponent execution, NotificationComponent notifications)` : `IDeskMediator` | `Submit` runs risk → (execution) → notification and returns the outcome |
 
-```bash
-dotnet test --filter "FullyQualifiedName~Mediator"
-```
+**Provided (don't recreate):** the `Order` and `OrderOutcome` records and the three colleagues
+`RiskComponent`, `ExecutionComponent`, `NotificationComponent` in
+[`DeskComponents.cs`](./DeskComponents.cs), plus the `Legacy/` baseline. The colleagues are complete —
+you only wire them together in the mediator.
 
-The rejected-order test checks `execution.Executions == 0` — the colleagues only act when the
-mediator tells them to.
+## Your task (from scratch)
+
+1. **Uncomment the tests.** In [`MediatorTests.cs`](../../../DesignPatternsBootcamp.Tests/Behavioral/MediatorTests.cs)
+   delete the `/*` and `*/`. Now `dotnet test --filter "FullyQualifiedName~Mediator"` **won't
+   compile** — `TradingDeskMediator` and its `Submit` don't exist yet. Each build error is the next
+   type to create.
+2. **Declare the hub.** Add a new `.cs` file in this folder; define `IDeskMediator` with a `Submit(Order)`
+   that returns an `OrderOutcome`, and a `TradingDeskMediator` that takes the three colleagues in its
+   constructor and holds them.
+3. **Coordinate the approved path.** In `Submit`, ask the risk colleague to approve the order. When it
+   approves, have execution run it (that hands back a reference), tell notification the order
+   *executed*, and return an executed `OrderOutcome` carrying the reference. The tests pin the reference
+   to `"EXE-O1"` and expect exactly one execution and one notification.
+4. **Short-circuit the rejected path.** When risk refuses, notify that the order was *rejected*, return
+   an un-executed outcome whose `Message` is the risk reason (`"Exceeds risk limit."`) and whose
+   `ExecutionRef` is null — and **never call execution**. The rejected-order test checks
+   `execution.Executions == 0`: colleagues act only when the mediator tells them to.
+5. **Green.** `dotnet test --filter "FullyQualifiedName~Mediator"`.
 
 ### Stretch goals
 
@@ -99,6 +118,7 @@ mediator tells them to.
 
 ## Done when
 
-- [ ] `Submit` coordinates risk → execution → notification with correct short-circuiting.
+- [ ] You created `IDeskMediator` and `TradingDeskMediator` from scratch, and `Submit` coordinates
+      risk → execution → notification with correct short-circuiting.
 - [ ] `dotnet test --filter "FullyQualifiedName~Mediator"` is fully green.
 - [ ] You can explain how adding a settlement step touches only the mediator.

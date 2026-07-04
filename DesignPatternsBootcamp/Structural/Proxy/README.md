@@ -2,6 +2,7 @@
 
 > **Week 2 · Day 4 · Structural**
 > Run just this kata: `dotnet test --filter "FullyQualifiedName~Proxy"`
+> **This is a build-from-scratch kata:** the subject interface and the real service are provided; you build the caching proxy yourself.
 
 ## The scenario
 
@@ -72,16 +73,29 @@ classDiagram
 > interface; Decorator *adds behaviour* meant to stack; Proxy *keeps the interface identical* and
 > *controls access* (often invisibly, and usually a single wrapper, not a stack).
 
-## Your task
+## Target API — what the (commented-out) tests expect
 
-Implement `GetPrice` in [`CachingPriceProxy.cs`](./CachingPriceProxy.cs):
+You must create this type so the tests compile and pass. **The name, constructor, and interface are
+fixed by the tests; the caching inside is your design.**
 
-1. On a cache **hit**, return the cached price and do **not** call the real service.
-2. On a **miss**, call `_real.GetPrice(symbol)` once, store it, and return it.
+| Type | Shape | Behaviour the tests pin down |
+|------|-------|------------------------------|
+| `CachingPriceProxy` | `CachingPriceProxy(IPriceService real)`; implements `IPriceService` → `decimal GetPrice(string symbol)` | same interface as the real service; **cache hit** returns the stored price without touching `real`; **miss** fetches once, stores, returns |
 
-```bash
-dotnet test --filter "FullyQualifiedName~Proxy"
-```
+**Provided (do not recreate):** `PriceService.cs` gives you the `IPriceService` subject interface and
+the `RealPriceService` real subject (with its `CallCount`). `Legacy/LegacyPriceClient.cs` is the
+"before" code that calls the service directly. The proxy is the **only** type missing.
+
+## Your task (from scratch)
+
+1. **Uncomment the tests.** In [`ProxyTests.cs`](../../../DesignPatternsBootcamp.Tests/Structural/ProxyTests.cs)
+   delete the `/*` and `*/`. Now `dotnet test --filter "FullyQualifiedName~Proxy"` **won't compile** —
+   the only missing type is `CachingPriceProxy`, so that single build error is your checklist.
+2. **Create the proxy.** Add a new `.cs` file in this folder; define `CachingPriceProxy` that
+   **implements `IPriceService`**, holds the injected real subject, and keeps a per-symbol cache.
+3. **Cache in `GetPrice`.** On a cache **hit**, return the cached price and do **not** call the real
+   service. On a **miss**, call the real service once, store the result, and return it.
+4. **Green.** `dotnet test --filter "FullyQualifiedName~Proxy"`.
 
 The tests assert on `RealPriceService.CallCount`, so they verify you actually *avoided* the backend,
 not just returned the right number. `Proxy_is_a_drop_in_replacement…` even hands the proxy to the
@@ -107,6 +121,7 @@ unchanged legacy client — transparency in action.
 
 ## Done when
 
-- [ ] `GetPrice` caches: hits skip the backend, misses fetch once.
+- [ ] You created `CachingPriceProxy` from scratch, and `GetPrice` caches: hits skip the backend,
+  misses fetch once.
 - [ ] `dotnet test --filter "FullyQualifiedName~Proxy"` is fully green.
 - [ ] You can explain why the proxy sharing `IPriceService` is what makes it invisible to callers.

@@ -2,6 +2,7 @@
 
 > **Week 1 · Day 4 · Creational**
 > Run just this kata: `dotnet test --filter "FullyQualifiedName~Singleton"`
+> **This is a build-from-scratch kata:** you create every type yourself. Nothing is stubbed.
 
 ## The scenario
 
@@ -73,17 +74,39 @@ Alternatives you should recognise:
 - **Double-checked locking** — the manual version: check, `lock`, check again, create. Easy to get
   subtly wrong; prefer `Lazy<T>` unless you have a reason.
 
-## Your task
+## Target API — what the (commented-out) tests expect
 
-Implement the `Instance` accessor in [`MarketDataConnection.cs`](./MarketDataConnection.cs) so it
-returns a single, lazily-created, thread-safe instance (use `Lazy<T>`).
+The implementation file was deleted; you recreate the one type below so the tests compile and pass.
+**Its name and static surface are fixed by the tests; the mechanism is your design.**
 
-```bash
-dotnet test --filter "FullyQualifiedName~Singleton"
-```
+| Member | Signature | Behaviour the tests pin down |
+|--------|-----------|------------------------------|
+| `MarketDataConnection` | class with a **private** constructor | can't be `new`ed from outside; each construction bumps `ConstructionCount` and does the "expensive" setup |
+| `MarketDataConnection.Instance` | `static MarketDataConnection Instance { get; }` | returns the one shared instance — the **same object** every call, created **lazily** on first access, **thread-safe** |
+| `MarketDataConnection.ConstructionCount` | `static int ConstructionCount { get; }` | how many times the constructor has run — must be `1` no matter how many callers, even under a 256-thread stampede |
 
-The `Concurrent_first_access_still_constructs_exactly_one` test fires 256 threads at `Instance` at
-once and asserts `ConstructionCount == 1` — that is the thread-safety requirement made concrete.
+Reach for `System.Lazy<T>` for the lazy + thread-safe accessor (see the idiomatic-C# snippet above).
+
+**Provided (do not recreate):** the "before"
+[`Legacy/LegacyMarketDataClient.cs`](./Legacy/LegacyMarketDataClient.cs), with its public constructor
+and `InstancesCreated` counter — the per-caller waste you're removing.
+
+## Your task (from scratch)
+
+1. **Uncomment the tests.** In
+   [`SingletonTests.cs`](../../../DesignPatternsBootcamp.Tests/Creational/SingletonTests.cs) delete
+   the `/*` and `*/`. `dotnet test --filter "FullyQualifiedName~Singleton"` **won't compile** —
+   `MarketDataConnection` does not exist yet. That error is step one done.
+2. **Create the class with a private constructor.** Add a `.cs` file; define `MarketDataConnection`
+   whose constructor is `private` (so no caller can `new` it) and does the "expensive" setup, bumping
+   an internal count.
+3. **Expose `ConstructionCount`.** A static, read-only count of how many times the constructor ran.
+   `The_expensive_constructor_runs_only_once` asserts it stays `1`.
+4. **Expose `Instance` lazily and thread-safely.** A static accessor that creates the one instance on
+   first use and returns it forever after. Use `Lazy<T>` so a burst of concurrent first-callers still
+   constructs exactly one — `Concurrent_first_access_still_constructs_exactly_one` fires 256 threads
+   at `Instance` and asserts `ConstructionCount == 1`.
+5. **Green.** `dotnet test --filter "FullyQualifiedName~Singleton"`.
 
 ## ⚠️ Singleton is the most abused pattern — read this
 
@@ -127,6 +150,7 @@ everything else in application code.
 
 ## Done when
 
-- [ ] `Instance` returns a lazily-created, thread-safe single instance.
+- [ ] You created `MarketDataConnection` from scratch: private constructor, `ConstructionCount`, and
+      a lazy, thread-safe `Instance`.
 - [ ] `dotnet test --filter "FullyQualifiedName~Singleton"` is fully green.
 - [ ] You can articulate, in one sentence, why a DI singleton is usually preferable to this one.

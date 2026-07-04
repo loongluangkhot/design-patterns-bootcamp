@@ -2,6 +2,7 @@
 
 > **Week 4 · Day 1a · Behavioral**
 > Run just this kata: `dotnet test --filter "FullyQualifiedName~Observer"`
+> **This is a build-from-scratch kata:** you create every type yourself. Nothing is stubbed.
 
 ## The scenario
 
@@ -62,20 +63,38 @@ classDiagram
 > streams). This hand-rolled version shows the mechanics behind them — a subscriber list and a
 > broadcast loop.
 
-## Your task
+## Target API — what the (commented-out) tests expect
 
-Implement the three methods in [`OrderStatusPublisher.cs`](./OrderStatusPublisher.cs):
+You must create these types so the tests compile and pass. **Names and constructor signatures are
+fixed by the tests; everything inside is your design.**
 
-1. **`Subscribe`** — add the observer to `_observers`.
-2. **`Unsubscribe`** — remove it.
-3. **`ChangeStatus`** — call `OnStatusChanged(orderId, status)` on **every** subscribed observer.
+| Type | Shape | Behaviour the tests pin down |
+|------|-------|------------------------------|
+| `IOrderObserver` | interface: `void OnStatusChanged(string orderId, OrderStatus status)` | the observer contract the publisher broadcasts to |
+| `OrderStatusPublisher` | `void Subscribe(IOrderObserver)`, `void Unsubscribe(IOrderObserver)`, `void ChangeStatus(string orderId, OrderStatus status)` | the subject — keeps a subscriber list and notifies every one |
+| `AuditLog` | `AuditLog()` : `IOrderObserver`; exposes `Entries` | records `"{orderId}:{status}"` (e.g. `"O1:Filled"`) per change |
+| `ClientNotifier` | `ClientNotifier()` : `IOrderObserver`; exposes `NotificationsSent` (int), `LastStatus` (`OrderStatus`) | counts pushes and remembers the last status |
 
-```bash
-dotnet test --filter "FullyQualifiedName~Observer"
-```
+**Provided (don't recreate):** the `OrderStatus` enum in [`OrderStatus.cs`](./OrderStatus.cs) and the
+`Legacy/` baseline. The observer interface, the publisher, and both concrete observers are yours.
 
-`A_brand_new_observer_type_just_subscribes…` is the payoff: a new listener plugs in without the
-publisher changing at all.
+## Your task (from scratch)
+
+1. **Uncomment the tests.** In [`ObserverTests.cs`](../../../DesignPatternsBootcamp.Tests/Behavioral/ObserverTests.cs)
+   delete the `/*` and `*/`. Now `dotnet test --filter "FullyQualifiedName~Observer"` **won't compile** —
+   `IOrderObserver`, `OrderStatusPublisher`, `AuditLog` and `ClientNotifier` don't exist yet. Each build
+   error names the next type to create.
+2. **Define the observer contract.** Add a new `.cs` file; declare `IOrderObserver` with a single
+   `OnStatusChanged(orderId, status)` method.
+3. **Build the subject.** Give `OrderStatusPublisher` a private list of observers, `Subscribe` /
+   `Unsubscribe` to add and remove one, and `ChangeStatus` that calls `OnStatusChanged` on **every**
+   subscribed observer. The subject knows only the interface, never the concrete observers.
+4. **Build the concrete observers.** `AuditLog` records `"{orderId}:{status}"` into its `Entries` for
+   each change; `ClientNotifier` increments `NotificationsSent` and stores `LastStatus`. Get
+   `Subscribed_observers_are_notified…` and `Unsubscribed_observers_stop_receiving_updates` green.
+5. **Green.** `dotnet test --filter "FullyQualifiedName~Observer"`.
+   `A_brand_new_observer_type_just_subscribes…` is the payoff: a new listener plugs in without the
+   publisher changing at all.
 
 ### Stretch goals
 
@@ -97,6 +116,6 @@ publisher changing at all.
 
 ## Done when
 
-- [ ] `Subscribe`, `Unsubscribe`, and `ChangeStatus` are implemented.
+- [ ] You created `IOrderObserver`, `OrderStatusPublisher`, `AuditLog` and `ClientNotifier` from scratch.
 - [ ] `dotnet test --filter "FullyQualifiedName~Observer"` is fully green.
 - [ ] You can add a new observer type without touching `OrderStatusPublisher`.

@@ -2,6 +2,7 @@
 
 > **Week 1 · Day 1b · Creational**
 > Run just this kata: `dotnet test --filter "FullyQualifiedName~AbstractFactory"`
+> **This is a build-from-scratch kata:** you create every type yourself. Nothing is stubbed.
 
 ## The scenario
 
@@ -102,21 +103,48 @@ classDiagram
     EuMarketFactory ..> EuSettlementPolicy : creates
 ```
 
-## Your task
+## Target API — what the (commented-out) tests expect
 
-The settlement policies and the client are provided. You supply the **fee maths** and **wire up
-the two factories** so each produces a coherent family.
+Every implementation file was deleted; you recreate all of these so the tests compile and pass.
+**Names and constructor signatures are fixed by the tests; the bodies are your design.**
 
-1. **Implement the fee schedules** in [`Products.cs`](./Products.cs): port the `"US"` and `"EU"`
-   branches of `LegacyTradeDesk.Commission` into `UsFeeSchedule` and `EuFeeSchedule`.
-2. **Implement the two concrete factories** in [`IMarketFactory.cs`](./IMarketFactory.cs): each
-   `Create…` method returns its market's product.
-3. **Run the tests:**
-   ```bash
-   dotnet test --filter "FullyQualifiedName~AbstractFactory"
-   ```
-4. **See the guarantee.** `A_booking_is_internally_consistent_…` passes because `TradeBooking`
-   pulled *both* products from one factory. There is no code path that mixes markets.
+| Type | Shape | Behaviour the tests pin down |
+|------|-------|------------------------------|
+| `IMarketFactory` | interface: `IFeeSchedule CreateFeeSchedule()`, `ISettlementPolicy CreateSettlementPolicy()` | the **Abstract Factory** — one creator per product in the family |
+| `UsMarketFactory` | `: IMarketFactory`, parameterless ctor | creates the **US** family (`UsFeeSchedule` + `UsSettlementPolicy`) |
+| `EuMarketFactory` | `: IMarketFactory`, parameterless ctor | creates the **EU** family (`EuFeeSchedule` + `EuSettlementPolicy`) |
+| `IFeeSchedule` | interface: `Money Commission(decimal notional)` | abstract product |
+| `UsFeeSchedule` | `: IFeeSchedule`, parameterless ctor | `Commission` = `max($1, 0.1% × notional)` in `USD` (→ `100.00` on 100k; `1.00` on 500, the floor) |
+| `EuFeeSchedule` | `: IFeeSchedule`, parameterless ctor | `Commission` = `€1.20 + 0.2% × notional` in `EUR` (→ `201.20` on 100k) |
+| `ISettlementPolicy` | interface: `int SettlementDays { get; }`, `string Currency { get; }` | abstract product |
+| `UsSettlementPolicy` | `: ISettlementPolicy`, parameterless ctor | `SettlementDays` = 1, `Currency` = `"USD"` |
+| `EuSettlementPolicy` | `: ISettlementPolicy`, parameterless ctor | `SettlementDays` = 2, `Currency` = `"EUR"` |
+| `TradeBooking` | `TradeBooking(IMarketFactory factory)`, `BookingSummary Book(decimal notional)` | the **Client** — pulls *both* products from the one factory so a booking is internally consistent |
+
+**Provided (do not recreate):** the `Money` and `BookingSummary` records in
+[`MarketModels.cs`](./MarketModels.cs) (note `Money` is compared with `Assert.Equal`, so its record
+value-equality is relied on); the "before" [`Legacy/LegacyTradeDesk.cs`](./Legacy/LegacyTradeDesk.cs),
+whose `Commission` branches give you the exact fee maths.
+
+## Your task (from scratch)
+
+1. **Uncomment the tests.** In
+   [`AbstractFactoryTests.cs`](../../../DesignPatternsBootcamp.Tests/Creational/AbstractFactoryTests.cs)
+   delete the `/*` and `*/`. `dotnet test --filter "FullyQualifiedName~AbstractFactory"` **won't
+   compile** — good. Each missing-type error names a row in the table above; that is your checklist.
+2. **Create the abstract products.** Define `IFeeSchedule` (`Commission` → `Money`) and
+   `ISettlementPolicy` (`SettlementDays`, `Currency`) — the two products every market must supply.
+3. **Create the concrete products.** Port the `"US"` and `"EU"` branches of
+   `LegacyTradeDesk.Commission` into `UsFeeSchedule`/`EuFeeSchedule` (mind the US `$1` floor), and give
+   each settlement policy its days + currency. `Us_commission_matches_the_legacy_maths` and its EU
+   twin pin the numbers.
+4. **Create the factories.** Define `IMarketFactory`; implement `UsMarketFactory` and
+   `EuMarketFactory` so each `Create…` returns *its own market's* product.
+   `Us_factory_builds_a_us_family` checks the types line up.
+5. **Create the client.** `TradeBooking` takes one `IMarketFactory` and, in `Book`, pulls **both**
+   products from it — so the commission currency and the settlement currency can never disagree. That
+   is what the `A_booking_is_internally_consistent_…` tests prove.
+6. **Green.** `dotnet test --filter "FullyQualifiedName~AbstractFactory"`.
 
 ### Stretch goals
 
@@ -139,7 +167,7 @@ the two factories** so each produces a coherent family.
 
 ## Done when
 
-- [ ] `Products.cs` — both fee schedules implemented.
-- [ ] `IMarketFactory.cs` — both concrete factories implemented.
+- [ ] You created both product interfaces, all four concrete products, both factories, and
+      `TradeBooking` from scratch.
 - [ ] `dotnet test --filter "FullyQualifiedName~AbstractFactory"` is fully green.
 - [ ] You can explain why `TradeBooking` can never mix a US fee with EU settlement.

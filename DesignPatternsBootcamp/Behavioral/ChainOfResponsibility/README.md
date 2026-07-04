@@ -2,6 +2,7 @@
 
 > **Week 3 · Day 1a · Behavioral**
 > Run just this kata: `dotnet test --filter "FullyQualifiedName~ChainOfResponsibility"`
+> **This is a build-from-scratch kata:** you create every type yourself. Nothing is stubbed.
 
 ## The scenario
 
@@ -68,24 +69,38 @@ flowchart LR
     R -. reject .-> X
 ```
 
-## Your task
+## Target API — what the (commented-out) tests expect
 
-Implement `Check` in each of the four handlers in
-[`OrderValidation.cs`](./OrderValidation.cs). Return **`null`** to pass, or a **reason string** to
-reject:
+You must create these types so the tests compile and pass. **Names and constructor signatures are
+fixed by the tests; everything inside is your design.**
 
-1. `PositiveQuantityValidator` — reject `"Quantity must be positive."` when `Quantity <= 0`.
-2. `PriceBandValidator` — reject `"Price must be positive."` when `Price <= 0`.
-3. `NotionalLimitValidator` — reject `"Notional exceeds limit."` when `order.Notional > _limit`.
-4. `RestrictedSymbolValidator` — reject `$"Symbol {order.Symbol} is restricted."` when it's in `_restricted`.
+| Type | Shape | Behaviour the tests pin down |
+|------|-------|------------------------------|
+| `OrderValidator` | abstract handler: `OrderValidator SetNext(OrderValidator next)`, `ValidationResult Validate(Order order)`, protected abstract `Check(Order)` | links the next handler and returns it so `SetNext(…).SetNext(…)` chains; `Validate` runs *this* rule then passes the order down the chain — the first failure wins and stops the walk, reaching the end means approved |
+| `PositiveQuantityValidator` | `PositiveQuantityValidator()` | rejects `"Quantity must be positive."` when the quantity isn't positive |
+| `PriceBandValidator` | `PriceBandValidator()` | rejects `"Price must be positive."` when the price isn't positive |
+| `NotionalLimitValidator` | `NotionalLimitValidator(decimal limit)` | rejects `"Notional exceeds limit."` when the order's notional is over `limit` |
+| `RestrictedSymbolValidator` | `RestrictedSymbolValidator(string symbol)` | rejects `$"Symbol {symbol} is restricted."` when the order is that symbol |
 
-```bash
-dotnet test --filter "FullyQualifiedName~ChainOfResponsibility"
-```
+**Provided (do not create):** `Order` and `ValidationResult` in
+[`ValidationModels.cs`](./ValidationModels.cs) — the value types your handlers read and return
+(`ValidationResult.Pass()` / `ValidationResult.Reject(reason)`) — plus `LegacyOrderValidator` under
+[`Legacy/`](./Legacy/). Derive the exact reasons and numbers from the tests.
 
-The provided `Validate` already does the chaining and short-circuiting — notice
-`The_first_failing_handler_short_circuits_the_chain` proves the first failure wins and the rest are
-skipped.
+## Your task (from scratch)
+
+1. **Uncomment the tests.** In [`ChainOfResponsibilityTests.cs`](../../../DesignPatternsBootcamp.Tests/Behavioral/ChainOfResponsibilityTests.cs)
+   delete the `/*` and `*/`. Now `dotnet test --filter "FullyQualifiedName~ChainOfResponsibility"`
+   **won't compile** — that's step one done. Each "type or namespace could not be found" error is a
+   type on your to-do list.
+2. **Create the handler base.** Add a new `.cs` file in this folder; define the abstract
+   `OrderValidator` with `SetNext`, `Validate`, and the protected `Check` each rule overrides. Put
+   the chaining and first-failure short-circuit here once so no concrete handler repeats it.
+3. **Create the four concrete validators.** `PositiveQuantityValidator`, `PriceBandValidator`,
+   `NotionalLimitValidator`, `RestrictedSymbolValidator` — each overrides `Check` to pass (return
+   `null`/`Pass()`) or reject with its reason. `The_first_failing_handler_short_circuits_the_chain`
+   pins the behaviour your `Validate` must have: the first failure wins and the rest are skipped.
+4. **Green.** `dotnet test --filter "FullyQualifiedName~ChainOfResponsibility"`.
 
 ### Stretch goals
 
@@ -107,6 +122,6 @@ skipped.
 
 ## Done when
 
-- [ ] All four `Check` methods are implemented.
+- [ ] You created the `OrderValidator` base and the four concrete validators from scratch.
 - [ ] `dotnet test --filter "FullyQualifiedName~ChainOfResponsibility"` is fully green.
 - [ ] You can rebuild the chain in a new order without touching any handler.
