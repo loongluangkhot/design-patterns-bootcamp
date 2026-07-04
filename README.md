@@ -13,23 +13,28 @@ code, feel the pain it causes, then refactor it into the pattern until the tests
 
 ```
 DesignPatternsBootcamp.sln
-├─ DesignPatternsBootcamp/            ← the code you edit (a class library)
-│  └─ Creational/
-│     ├─ FactoryMethod/               ← one folder per pattern
-│     │  ├─ README.md                 ← the lesson: challenge, pattern, UML, steps
-│     │  ├─ Legacy/                   ← the "before" code that smells
-│     │  └─ *.cs                      ← the skeletons you fill in
-│     ├─ AbstractFactory/
-│     ├─ Builder/
-│     ├─ Prototype/
-│     ├─ Singleton/
-│     └─ Integration/                 ← end-of-week capstone
-└─ DesignPatternsBootcamp.Tests/      ← the tests that grade your work
-   └─ Creational/
+├─ DesignPatternsBootcamp/               ← the code you edit (a class library)
+│  ├─ Creational/                        Week 1
+│  │  ├─ FactoryMethod/                  ← every pattern folder has the same shape:
+│  │  │  ├─ README.md                    ←   the lesson: challenge, pattern, UML, steps
+│  │  │  ├─ Legacy/                      ←   the "before" code that smells
+│  │  │  └─ *.cs                         ←   the skeletons you fill in
+│  │  ├─ AbstractFactory/  Builder/  Prototype/  Singleton/
+│  │  └─ Integration/                    ← end-of-week capstone (combines the week's patterns)
+│  ├─ Structural/                        Week 2
+│  │  ├─ Adapter/  Bridge/  Composite/  Decorator/  Facade/  Flyweight/  Proxy/
+│  │  └─ Integration/                    ← capstone
+│  └─ Behavioral/                        Weeks 3 & 4
+│     ├─ ChainOfResponsibility/  Command/  Interpreter/  Iterator/  Mediator/  Memento/
+│     ├─ Observer/  State/  Strategy/  TemplateMethod/  Visitor/
+│     ├─ Integration/                    ← Week 3 capstone
+│     └─ FinalProject/                   ← Week 4 capstone (the finale)
+└─ DesignPatternsBootcamp.Tests/         ← the tests that grade your work
+   └─ Creational/  Structural/  Behavioral/
 ```
 
-The `Structural/` and `Behavioral/` folders arrive in later weeks — see [STATUS.md](./STATUS.md) for
-the full roadmap.
+All 23 patterns are here. Work through them in the order laid out in [STATUS.md](./STATUS.md); each
+week ends with a capstone (`Integration`/`FinalProject`) that composes several patterns together.
 
 ## The workflow for every pattern
 
