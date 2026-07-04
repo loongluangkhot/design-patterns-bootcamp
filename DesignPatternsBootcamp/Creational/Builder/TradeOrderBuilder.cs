@@ -14,6 +14,9 @@ namespace DesignPatternsBootcamp.Creational.Builder;
 /// </summary>
 public sealed class TradeOrderBuilder
 {
+    // The fluent setters below fill these in; Build() (which you implement) reads them. Until you
+    // do, the compiler sees a few of them as write-only — silence that transient CS0414 here.
+#pragma warning disable CS0414
     private Side _side;
     private int _quantity;
     private string? _symbol;
@@ -24,6 +27,7 @@ public sealed class TradeOrderBuilder
     private string? _account;
     private readonly List<Allocation> _allocations = new();
     private string? _note;
+#pragma warning restore CS0414
 
     public static TradeOrderBuilder Create() => new();
 
