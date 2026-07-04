@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <!-- This is a class library: the exercises are driven from the test project.
+         Run `dotnet test` from the repo root to work through the katas. -->
+    <!-- Katas ship as stubs whose private fields are only consumed by the method YOU implement,
+         so until then the compiler flags them as unused. Suppress just those two "unused field"
+         warnings so a fresh clone builds clean; they'll never fire once a kata is completed. -->
+    <NoWarn>$(NoWarn);CS0169;CS0414</NoWarn>
+  </PropertyGroup>
+
+</Project>
