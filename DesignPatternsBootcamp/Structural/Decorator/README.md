@@ -2,45 +2,45 @@
 
 > **Week 2 · Day 2b · Structural**
 > Run just this kata: `dotnet test --filter "FullyQualifiedName~Decorator"`
+> **This is a build-from-scratch kata:** you create every type yourself. Nothing is stubbed.
 
 ## The scenario
 
-The all-in cost of a trade is the notional plus a **stack of charges**: commission, exchange fees,
-taxes, and more. Which charges apply — and in **what order** — varies by venue, account, and
-instrument. Whether the exchange fee is itself taxable literally changes the number.
+Pricing a trade means layering charges on top of a base notional: commission, an exchange fee, tax.
+Which charges apply — and in what order — varies per account and venue. We want to compose those
+charges freely at runtime, not hard-code every combination.
 
 ## The challenge
 
-Open [`Legacy/LegacyTradePricer.cs`](./Legacy/LegacyTradePricer.cs). One method takes a boolean (and
-a value) for every charge:
+Open [`Legacy/LegacyTradePricer.cs`](./Legacy/LegacyTradePricer.cs). Every charge is a boolean flag
+on one method, applied in a fixed, baked-in order:
 
 ```csharp
 pricer.Price(10_000m, commission: true, commissionRate: 0.001m,
-                       exchangeFee: true, exchangeAmount: 5m,
-                       tax: true,         taxRate: 0.10m);
+                      exchangeFee: true, exchangeAmount: 5m,
+                      tax: true, taxRate: 0.10m);
 ```
 
 | Smell | What it costs you |
 |-------|-------------------|
-| **Flag-argument soup** | A row of booleans no reader can decode at the call site. |
-| **Hard-coded order** | The sequence of charges is fixed inside the method; callers can't choose it. |
-| **Not open for extension** | A new charge changes this method's signature and body — every caller breaks. |
-| **Combination explosion (the OO alternative)** | Subclassing instead (`TradeWithCommissionAndTax`, …) multiplies classes. |
+| **Flag-argument wall** | A row of booleans no caller can read. |
+| **Fixed order** | The order of charges is hard-coded here, not chosen by the caller. |
+| **Closed to extension** | A new charge (stamp duty, clearing fee) changes this method's signature and every call site. |
 
-We want each charge to be a small, composable thing we can **stack in any order and combination**.
+Your job is to **refactor this into the Decorator pattern — building the whole thing yourself.**
 
 ## The pattern: Decorator
 
 > **Intent:** Attach additional responsibilities to an object dynamically. Decorators provide a
 > flexible alternative to subclassing for extending functionality. — *Gang of Four*
 
-- The **Component** (`IPricedTrade`) is the common interface.
-- The **Concrete Component** (`BaseTrade`) is the thing being decorated.
-- The **base Decorator** (`TradeChargeDecorator`) *is* a component and *wraps* a component.
-- **Concrete Decorators** (`CommissionDecorator`, `ExchangeFeeDecorator`, `TaxDecorator`) each add
-  one charge on top of whatever they wrap — including another decorator.
+- A **Component** interface both the base object and the wrappers implement.
+- A **Concrete Component** — the bare trade.
+- **Decorators** each *wrap* a component (an "inner"), delegate to it, and add one charge on top. A
+  decorator is itself a component, so decorators stack: any charge can wrap any priced trade,
+  including another decorator.
 
-### UML
+### UML (the shape you're aiming for)
 
 ```mermaid
 classDiagram
@@ -62,56 +62,62 @@ classDiagram
     TradeChargeDecorator <|-- CommissionDecorator
     TradeChargeDecorator <|-- ExchangeFeeDecorator
     TradeChargeDecorator <|-- TaxDecorator
-    TradeChargeDecorator o--> IPricedTrade : wraps Inner
+    TradeChargeDecorator o--> IPricedTrade : wraps (Inner)
 ```
 
-A decorator is both an `IPricedTrade` (so it can stand in anywhere) and a holder of one (so it can
-delegate then augment). `Tax(Fee(Commission(Base)))` is a four-object onion; calling `Total()` peels
-inward and adds back outward.
+The `TradeChargeDecorator` abstract base is *one* way to avoid repeating the "hold an inner + delegate
+to it" plumbing in every decorator — but whether you use it is your call. The tests don't care.
 
-> **Decorator vs. Adapter/Composite:** all three "wrap" an object. Adapter changes the *interface*;
-> Decorator keeps the same interface and adds *behaviour*; Composite uses the same wrapping shape to
-> build *trees*. Same skeleton, different intent.
+## Target API — what the (commented-out) tests expect
 
-## Your task
+You must create these types so the tests compile and pass. **Names and constructor signatures are
+fixed by the tests; everything inside is your design.**
 
-Implement `Total()` and `Description` for the three decorators in
-[`PricedTrade.cs`](./PricedTrade.cs). Each one calls `Inner` and adds its bit:
+| Type | Shape | Behaviour the tests pin down |
+|------|-------|------------------------------|
+| `IPricedTrade` | interface: `decimal Total()`, `string Description { get; }` | the common component type |
+| `BaseTrade` | `BaseTrade(string symbol, decimal notional)` | `Total()` is the notional; `Description` is the symbol |
+| `CommissionDecorator` | `CommissionDecorator(IPricedTrade inner, decimal rate)` | adds a **percentage** of what it wraps |
+| `ExchangeFeeDecorator` | `ExchangeFeeDecorator(IPricedTrade inner, decimal fee)` | adds a **flat** amount |
+| `TaxDecorator` | `TaxDecorator(IPricedTrade inner, decimal rate)` | adds a **percentage** on top of everything beneath it |
 
-1. **`CommissionDecorator`** — `Inner.Total()` plus `Inner.Total() × rate`; description
-   `"<inner> + commission"`.
-2. **`ExchangeFeeDecorator`** — `Inner.Total()` plus the flat fee; `"<inner> + exchange fee"`.
-3. **`TaxDecorator`** — `Inner.Total() × (1 + rate)`; `"<inner> + tax"`.
+`Description` should read as the layers applied, e.g. `"AAPL + commission + exchange fee + tax"`. The
+exact numbers are in the tests — derive each formula from them.
 
-```bash
-dotnet test --filter "FullyQualifiedName~Decorator"
-```
+## Your task (from scratch)
 
-`Order_matters_when_charges_are_not_all_the_same_kind` proves the pay-off: because you compose the
-onion yourself, taxing-then-fee and fee-then-tax give different totals — a decision the legacy method
-made for you.
+1. **Uncomment the tests.** In [`DecoratorTests.cs`](../../../DesignPatternsBootcamp.Tests/Structural/DecoratorTests.cs)
+   delete the `/*` and `*/`. Now `dotnet test --filter "FullyQualifiedName~Decorator"` **won't
+   compile** — that's step one done. The build errors are your checklist.
+2. **Create the component.** Add a new `.cs` file in this folder; define `IPricedTrade` and
+   `BaseTrade`. Get `Base_trade_total_is_just_the_notional` green.
+3. **Create the decorators.** Add `CommissionDecorator`, `ExchangeFeeDecorator`, `TaxDecorator`
+   (consider the abstract base to share the wrap-and-delegate plumbing). Each holds an inner
+   `IPricedTrade`, delegates to it, and adds its charge.
+4. **Make the maths and the description right.** Use the test numbers to pin each formula. Watch the
+   `Order_matters…` test — mixing a flat fee with a percentage tax makes composition order
+   significant.
+5. **Green.** `dotnet test --filter "FullyQualifiedName~Decorator"`.
 
 ### Stretch goals
 
-- **Add a `RegulatoryFeeDecorator`** (e.g. a per-share SEC-style fee) with **only** a new class — no
-  existing code changes. That's "open for extension, closed for modification" in one move.
-- **A decorator that changes behaviour, not just numbers.** Add an `AuditDecorator` that records each
-  `Total()` call — decorators can add cross-cutting behaviour, not only value.
-- **`Description` as evidence.** Explain how the onion's `Description` gives you a free audit trail of
-  exactly which charges applied and in what order.
+- **Add a charge** (`StampDutyDecorator`) with no change to any existing class or the base trade.
+- **`CappedFee`** — a decorator that wraps another and caps its `Total` at a maximum. (Strategy-meets-
+  Decorator.)
+- **Decorator vs. Proxy vs. Facade:** all wrap something. Which *adds behaviour*, which *controls
+  access*, which *simplifies*? Write a sentence on each.
 
 ## When to use it
 
 - **Use it** to add responsibilities to individual objects dynamically and transparently, without a
-  subclass per combination, and when order/opt-in of those responsibilities varies.
-- **Real-world finance:** layered fees/taxes, notification pipelines, streams (buffering/encryption),
-  cross-cutting concerns like logging, caching, retry, and auth around a service.
-- **Avoid it** when you only ever need one fixed combination (just write it), or when deep decorator
-  stacks make debugging a "who added this?" nightmare — keep the onion shallow and named.
+  subclass per combination.
+- **Real-world finance:** layered pricing/fees/taxes, wrapping streams or handlers (logging, retry,
+  caching), enriching messages/requests in a pipeline.
+- **Avoid it** when the layering is fixed and small (a couple of fields on the object is simpler), or
+  when order-dependence between decorators becomes a hidden trap.
 
 ## Done when
 
-- [ ] All three decorators implement `Total()` and `Description`.
+- [ ] You created `IPricedTrade`, `BaseTrade`, and the three decorators from scratch.
 - [ ] `dotnet test --filter "FullyQualifiedName~Decorator"` is fully green.
-- [ ] You can explain why `Tax(Fee(x))` and `Fee(Tax(x))` differ but `Tax(Commission(x))` and
-      `Commission(Tax(x))` don't.
+- [ ] You can explain why `Order_matters…` produces two different totals.

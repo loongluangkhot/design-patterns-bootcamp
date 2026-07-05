@@ -2,6 +2,7 @@
 
 > **Week 3 · Day 2a · Behavioral**
 > Run just this kata: `dotnet test --filter "FullyQualifiedName~Interpreter"`
+> **This is a build-from-scratch kata:** you create every type yourself. Nothing is stubbed.
 
 ## The scenario
 
@@ -72,22 +73,38 @@ flowchart TD
     O --> S2["SymbolIs MSFT"]
 ```
 
-## Your task
+## Target API — what the (commented-out) tests expect
 
-Implement `Interpret` on all five expressions in [`RuleExpressions.cs`](./RuleExpressions.cs):
+You must create these types so the tests compile and pass. **Names and constructor signatures are
+fixed by the tests; everything inside is your design.**
 
-1. `SymbolIs` → `context.Symbol == _symbol`
-2. `NotionalAtLeast` → `context.Notional >= _threshold`
-3. `And` → `_left.Interpret(context) && _right.Interpret(context)`
-4. `Or` → `_left.Interpret(context) || _right.Interpret(context)`
-5. `Not` → `!_inner.Interpret(context)`
+| Type | Shape | Behaviour the tests pin down |
+|------|-------|------------------------------|
+| `IRuleExpression` | interface: `bool Interpret(TradeContext context)` | the common expression type every node implements |
+| `SymbolIs` | `SymbolIs(string symbol)` — terminal | true when the context's symbol equals `symbol` |
+| `NotionalAtLeast` | `NotionalAtLeast(decimal threshold)` — terminal | true when the context's notional is at or above `threshold` |
+| `And` | `And(IRuleExpression left, IRuleExpression right)` — nonterminal | true only when both sides interpret true |
+| `Or` | `Or(IRuleExpression left, IRuleExpression right)` — nonterminal | true when either side interprets true |
+| `Not` | `Not(IRuleExpression inner)` — nonterminal | inverts its inner expression |
 
-```bash
-dotnet test --filter "FullyQualifiedName~Interpreter"
-```
+**Provided (do not create):** `TradeContext` (the trade facts a rule reads) in
+[`RuleContext.cs`](./RuleContext.cs), plus `LegacyFeeRule` under [`Legacy/`](./Legacy/).
 
-`Expressions_compose_into_an_arbitrary_tree` builds a nested rule from objects — the same rule the
-legacy hard-coded, plus an `OR` it couldn't express — with no new "rule code".
+## Your task (from scratch)
+
+1. **Uncomment the tests.** In [`InterpreterTests.cs`](../../../DesignPatternsBootcamp.Tests/Behavioral/InterpreterTests.cs)
+   delete the `/*` and `*/`. Now `dotnet test --filter "FullyQualifiedName~Interpreter"` **won't
+   compile** — that's step one done. Each "type or namespace could not be found" error is a type on
+   your to-do list.
+2. **Create the abstract expression.** Add a new `.cs` file; define `IRuleExpression` with its
+   `Interpret(TradeContext)` method — the one operation every node shares.
+3. **Create the terminals.** `SymbolIs` and `NotionalAtLeast` — the leaves that read the context
+   directly.
+4. **Create the nonterminals.** `And`, `Or`, `Not` — each holds sub-expression(s) and combines their
+   results by delegating `Interpret` down. `Expressions_compose_into_an_arbitrary_tree` proves the
+   pieces nest into any rule you assemble from objects — the same rule the legacy hard-coded, plus an
+   `OR` it couldn't express, with no new "rule code".
+5. **Green.** `dotnet test --filter "FullyQualifiedName~Interpreter"`.
 
 ### Stretch goals
 
@@ -110,6 +127,6 @@ legacy hard-coded, plus an `OR` it couldn't express — with no new "rule code".
 
 ## Done when
 
-- [ ] All five `Interpret` methods are implemented.
+- [ ] You created `IRuleExpression`, the two terminals, and the three nonterminals from scratch.
 - [ ] `dotnet test --filter "FullyQualifiedName~Interpreter"` is fully green.
 - [ ] You can build a brand-new rule at runtime without adding any code.

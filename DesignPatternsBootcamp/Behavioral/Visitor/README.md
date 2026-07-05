@@ -2,6 +2,7 @@
 
 > **Week 4 · Day 3 · Behavioral**
 > Run just this kata: `dotnet test --filter "FullyQualifiedName~Visitor"`
+> **This is a build-from-scratch kata:** you build the two visitors yourself. The element hierarchy is given; nothing is stubbed.
 
 ## The scenario
 
@@ -74,17 +75,31 @@ classDiagram
 > method). A `switch`/pattern-match is the opposite — easy to add a type, but each operation repeats
 > the dispatch. Choose Visitor when your *types* are stable and your *operations* grow.
 
-## Your task
+## Target API — what the (commented-out) tests expect
 
-Implement the three `Visit` methods in each visitor in [`Visitors.cs`](./Visitors.cs). The instruments
-and their `Accept` methods are provided.
+You must create these two visitor types so the tests compile and pass. **Names are fixed by the tests;
+everything inside is your design.**
 
-**MarketValueVisitor:** Equity → `Shares × Price`; Bond → `FaceValue`; Option → `Contracts × Premium × 100`.
-**TaxVisitor:** Equity → `Shares × Price × 0.15`; Bond → `FaceValue × CouponRate × 0.25`; Option → `Contracts × Premium × 100 × 0.20`.
+| Type | Shape | Behaviour the tests pin down |
+|------|-------|------------------------------|
+| `MarketValueVisitor` | `MarketValueVisitor()` (no args); implements `IInstrumentVisitor<decimal>` — `VisitEquity`, `VisitBond`, `VisitOption`, each returning `decimal` | Equity → `Shares × Price`; Bond → `FaceValue`; Option → `Contracts × Premium × 100` |
+| `TaxVisitor` | `TaxVisitor()` (no args); implements `IInstrumentVisitor<decimal>` | Equity → `Shares × Price × 0.15`; Bond → `FaceValue × CouponRate × 0.25`; Option → `Contracts × Premium × 100 × 0.20` |
 
-```bash
-dotnet test --filter "FullyQualifiedName~Visitor"
-```
+**Provided:** `Instruments.cs` gives you the whole **element** side — `IInstrument`, the visitor
+interface `IInstrumentVisitor<T>`, and the sealed `Equity`/`Bond`/`Option` with their double-dispatch
+`Accept<T>` already written. `Legacy/LegacyAnalytics.cs` is the "before". You write **only** the two
+concrete visitors; you do not touch the instruments. The exact numbers are in the tests.
+
+## Your task (from scratch)
+
+1. **Uncomment the tests.** In [`VisitorTests.cs`](../../../DesignPatternsBootcamp.Tests/Behavioral/VisitorTests.cs)
+   delete the `/*` and `*/`. Now `dotnet test --filter "FullyQualifiedName~Visitor"` **won't
+   compile** — that's step one done. The only missing types are `MarketValueVisitor` and `TaxVisitor`.
+2. **Create `MarketValueVisitor`.** Add a new `.cs` file; implement `IInstrumentVisitor<decimal>` with
+   the three `Visit…` methods valuing each instrument type. That greens the market-value tests.
+3. **Create `TaxVisitor`.** A second `IInstrumentVisitor<decimal>` applying a type-specific rate —
+   a brand-new operation over the **same** instruments, none of which change.
+4. **Green.** `dotnet test --filter "FullyQualifiedName~Visitor"`.
 
 `Adding_an_operation_is_a_new_visitor…` is the point: `TaxVisitor` is a whole new operation over the
 same instruments, and not one instrument class changed.
@@ -109,6 +124,7 @@ same instruments, and not one instrument class changed.
 
 ## Done when
 
-- [ ] Both visitors implement all three `Visit` methods.
+- [ ] You created `MarketValueVisitor` and `TaxVisitor` from scratch, each implementing all three
+      `Visit` methods (and you left the provided instruments untouched).
 - [ ] `dotnet test --filter "FullyQualifiedName~Visitor"` is fully green.
 - [ ] You can explain double dispatch, and which axis (types vs. operations) Visitor optimizes.

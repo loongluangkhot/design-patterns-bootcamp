@@ -2,6 +2,7 @@
 
 > **Week 3 · Day 2b · Behavioral**
 > Run just this kata: `dotnet test --filter "FullyQualifiedName~Iterator"`
+> **This is a build-from-scratch kata:** you create every type yourself. Nothing is stubbed.
 
 ## The scenario
 
@@ -60,20 +61,32 @@ classDiagram
     IEnumerable~Position~ ..> IEnumerator~Position~ : creates
 ```
 
-## Your task
+## Target API — what the (commented-out) tests expect
 
-Implement the two traversals in [`Book.cs`](./Book.cs) using `yield return`:
+You must create this type so the tests compile and pass. **The name and members are fixed by the
+tests; everything inside is your design.**
 
-1. **`GetEnumerator()`** — `foreach` over `_positions`, `yield return` each. This alone unlocks
-   `foreach (var p in book)` and LINQ (`book.Count()`, `book.Where(...)`, …).
-2. **`LongPositions()`** — `yield return` only the positions with `Quantity > 0`.
+| Type | Shape | Behaviour the tests pin down |
+|------|-------|------------------------------|
+| `Book` | implements `IEnumerable<Position>`; `void Add(Position position)`; `IEnumerator<Position> GetEnumerator()`; `IEnumerable<Position> LongPositions()` | `Add` stores a position **privately**; `foreach` and LINQ (`Count()`, `Select`, …) walk every position in insertion order; `LongPositions()` yields only positions with a positive quantity. There is no public list to index into — callers can only traverse. |
 
-```bash
-dotnet test --filter "FullyQualifiedName~Iterator"
-```
+**Provided (do not create):** `Position` (a `record`; positive quantity = long) in
+[`Position.cs`](./Position.cs), plus `LegacyBook` under [`Legacy/`](./Legacy/).
 
-Notice the tests never touch a list — there isn't a public one. They can only *traverse*, which is
-exactly the encapsulation we wanted.
+## Your task (from scratch)
+
+1. **Uncomment the tests.** In [`IteratorTests.cs`](../../../DesignPatternsBootcamp.Tests/Behavioral/IteratorTests.cs)
+   delete the `/*` and `*/`. Now `dotnet test --filter "FullyQualifiedName~Iterator"` **won't
+   compile** — that's step one done. Each "type or namespace could not be found" error is a type on
+   your to-do list.
+2. **Create the `Book`.** Add a new `.cs` file; give `Book` a *private* backing store and a public
+   `Add`. Implement `IEnumerable<Position>` — a `GetEnumerator()` that `yield return`s each position
+   unlocks `foreach (var p in book)` and all of LINQ (`book.Count()`, `book.Where(...)`, …) while the
+   storage stays hidden.
+3. **Add the long-only traversal.** `LongPositions()` — `yield return` only the positions with a
+   positive quantity. `Callers_can_only_traverse_the_book_not_index_into_it` proves there's no public
+   list to reach into — exactly the encapsulation we wanted.
+4. **Green.** `dotnet test --filter "FullyQualifiedName~Iterator"`.
 
 ### Stretch goals
 
@@ -96,6 +109,6 @@ exactly the encapsulation we wanted.
 
 ## Done when
 
-- [ ] `GetEnumerator()` and `LongPositions()` are implemented with `yield`.
+- [ ] You created the `Book` (with `GetEnumerator` and `LongPositions`, both via `yield`) from scratch.
 - [ ] `dotnet test --filter "FullyQualifiedName~Iterator"` is fully green.
 - [ ] You can explain how `foreach` and LINQ started working from just `GetEnumerator`.

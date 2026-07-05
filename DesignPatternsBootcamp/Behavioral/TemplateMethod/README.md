@@ -2,6 +2,7 @@
 
 > **Week 4 · Day 2b · Behavioral**
 > Run just this kata: `dotnet test --filter "FullyQualifiedName~TemplateMethod"`
+> **This is a build-from-scratch kata:** you create every type yourself. Nothing is stubbed.
 
 ## The scenario
 
@@ -71,19 +72,34 @@ classDiagram
 > *steps of a fixed skeleton* via **inheritance** (subclass overrides). Strategy swaps the *whole*
 > algorithm via **composition** (inject a different object). Inheritance vs. composition is the crux.
 
-## Your task
+## Target API — what the (commented-out) tests expect
 
-Fill in the steps in [`RegulatoryReport.cs`](./RegulatoryReport.cs) — `Generate()` is already written:
+You must create these types so the tests compile and pass. **Names and constructor signatures are
+fixed by the tests; the step names (`Title`/`FormatTrade`/`Summary`) and everything inside are your
+design.**
 
-1. **`MifidReport`** — `Title()` = `"MiFID II Transaction Report"`; `FormatTrade` =
-   `$"{Symbol},{Quantity},{Price:0.00},EUR"`. (Uses the default `Summary`.)
-2. **`FinraReport`** — `Title()` = `"FINRA OATS Report"`; `FormatTrade` =
-   `$"{Symbol}|{Quantity}|{Price:0.00}|USD"`; override `Summary()` =
-   `$"{Trades.Count} trades reported to FINRA"`.
+| Type | Shape | Behaviour the tests pin down |
+|------|-------|------------------------------|
+| `RegulatoryReport` | abstract base: `RegulatoryReport(IEnumerable<Trade> trades)`; `string Generate()` (the template method); abstract step `Title()`; abstract step `FormatTrade(Trade)`; hook `Summary()` with a default | `Generate()` emits **title → one `FormatTrade` line per trade → summary**, in that fixed order; default `Summary()` = `"Total trades: {count}"` |
+| `MifidReport` | `MifidReport(IEnumerable<Trade> trades)` | `Title` = `"MiFID II Transaction Report"`; row = `$"{Symbol},{Quantity},{Price:0.00},EUR"`; keeps the **default** `Summary` |
+| `FinraReport` | `FinraReport(IEnumerable<Trade> trades)` | `Title` = `"FINRA OATS Report"`; row = `$"{Symbol}|{Quantity}|{Price:0.00}|USD"`; **overrides** `Summary` = `$"{count} trades reported to FINRA"` |
 
-```bash
-dotnet test --filter "FullyQualifiedName~TemplateMethod"
-```
+**Provided:** `Trade.cs` (the `record Trade(string Symbol, int Quantity, decimal Price)`) and
+`Legacy/LegacyReportGenerator.cs` (the copy-pasted "before"). You build the abstract report and both
+subclasses.
+
+## Your task (from scratch)
+
+1. **Uncomment the tests.** In [`TemplateMethodTests.cs`](../../../DesignPatternsBootcamp.Tests/Behavioral/TemplateMethodTests.cs)
+   delete the `/*` and `*/`. Now `dotnet test --filter "FullyQualifiedName~TemplateMethod"` **won't
+   compile** — that's step one done. Each missing-type error is a row of the table above.
+2. **Write the abstract base + template method.** Add a new `.cs` file; define `RegulatoryReport` with
+   `Generate()` fixed as title → rows → summary, calling the (abstract) `Title`/`FormatTrade` steps and
+   the (default) `Summary` hook. Nothing greens yet — the base is abstract.
+3. **Write the subclasses.** Add `MifidReport` and `FinraReport`, each supplying its steps:
+   - **`MifidReport`** — `Title` = `"MiFID II Transaction Report"`; row `$"{Symbol},{Quantity},{Price:0.00},EUR"`; uses the default `Summary`.
+   - **`FinraReport`** — `Title` = `"FINRA OATS Report"`; row `$"{Symbol}|{Quantity}|{Price:0.00}|USD"`; override `Summary` = `$"{count} trades reported to FINRA"`.
+4. **Green.** `dotnet test --filter "FullyQualifiedName~TemplateMethod"`.
 
 `Both_reports_follow_the_same_skeleton_order` proves the shape is enforced by the shared template
 method — neither subclass can reorder it.
@@ -109,6 +125,7 @@ method — neither subclass can reorder it.
 
 ## Done when
 
-- [ ] `MifidReport` and `FinraReport` implement their steps.
+- [ ] You created the abstract `RegulatoryReport` (with the `Generate()` template method) and both
+      `MifidReport` and `FinraReport` subclasses from scratch.
 - [ ] `dotnet test --filter "FullyQualifiedName~TemplateMethod"` is fully green.
 - [ ] You can explain the difference between a primitive operation and a hook.

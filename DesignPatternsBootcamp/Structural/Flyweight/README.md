@@ -2,6 +2,7 @@
 
 > **Week 2 · Day 3b · Structural**
 > Run just this kata: `dotnet test --filter "FullyQualifiedName~Flyweight"`
+> **This is a build-from-scratch kata:** only the legacy code is provided; you build the flyweight, its factory, and the order yourself.
 
 ## The scenario
 
@@ -65,16 +66,37 @@ classDiagram
     Order --> Instrument : references shared flyweight
 ```
 
-## Your task
+## Target API — what the (commented-out) tests expect
 
-Implement `Get` in [`InstrumentFactory.cs`](./InstrumentFactory.cs) so it **interns** instruments:
+You must create these types so the tests compile and pass. **Property names read by the tests and the
+`Order`/`Get` signatures are fixed; each type's internal shape is your design.**
 
-1. If the symbol is already in `_pool`, return that same instance.
-2. Otherwise build one from `Catalog[symbol]`, store it in `_pool`, and return it.
+| Type | Shape | Behaviour the tests pin down |
+|------|-------|------------------------------|
+| `Instrument` | exposes `Symbol`, `Currency` (string), `TickSize` (decimal), `LotSize` (int), `Exchange` (string) | the shared, **immutable** intrinsic reference data — one object per symbol |
+| `InstrumentFactory` | `InstrumentFactory()`; `Instrument Get(string symbol)`; `int DistinctInstrumentCount { get; }` | **interns**: same symbol → the *very same* instance; count = number of distinct symbols pooled |
+| `Order` | `Order(Instrument instrument, int quantity, decimal price)`; exposes `Instrument` | holds a *reference* to a shared flyweight plus its own extrinsic quantity/price |
 
-```bash
-dotnet test --filter "FullyQualifiedName~Flyweight"
-```
+**Provided (do not recreate):** `Legacy/LegacyOrder.cs` — the "before" code, and the source of the
+reference-data values you must reproduce (`AAPL`/`MSFT` → `USD, 0.01, 100, NASDAQ`; `SAP` →
+`EUR, 0.01, 1, XETRA`). Everything else here is yours to build.
+
+## Your task (from scratch)
+
+1. **Uncomment the tests.** In [`FlyweightTests.cs`](../../../DesignPatternsBootcamp.Tests/Structural/FlyweightTests.cs)
+   delete the `/*` and `*/`. Now `dotnet test --filter "FullyQualifiedName~Flyweight"` **won't
+   compile** — `Instrument`, `InstrumentFactory`, and `Order` don't exist yet. The build errors are
+   your checklist.
+2. **Create the flyweight.** Add a new `.cs` file; define an immutable `Instrument` carrying the
+   intrinsic reference data. `The_flyweight_carries_the_reference_data` goes green once the factory can
+   build one with the right `Currency` / `TickSize` / `Exchange`.
+3. **Create the factory.** `InstrumentFactory.Get` **interns**: keep a pool keyed by symbol — if the
+   symbol is already pooled, return that same instance; otherwise build one from a catalog holding the
+   same values the legacy `switch` used, store it, and return it. `DistinctInstrumentCount` is the pool
+   size.
+4. **Create the order.** `Order` holds a shared `Instrument` plus its own `Quantity`/`Price` — the
+   extrinsic state the flyweight doesn't carry.
+5. **Green.** `dotnet test --filter "FullyQualifiedName~Flyweight"`.
 
 These tests use `Assert.Same` (reference identity), not `Assert.Equal` — because the whole point is
 that everyone gets the **same object**, not merely an equal one. `Many_orders_share_a_single_instrument_object`
@@ -100,6 +122,7 @@ builds three orders and proves they point at one flyweight.
 
 ## Done when
 
-- [ ] `Get` returns one shared, interned `Instrument` per symbol.
+- [ ] You created `Instrument`, `InstrumentFactory`, and `Order` from scratch, and `Get` returns one
+  shared, interned `Instrument` per symbol.
 - [ ] `dotnet test --filter "FullyQualifiedName~Flyweight"` is fully green.
 - [ ] You can name which fields here are intrinsic (shared) and which are extrinsic (per-order).

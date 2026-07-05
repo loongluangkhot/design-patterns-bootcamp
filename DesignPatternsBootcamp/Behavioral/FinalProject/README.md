@@ -2,7 +2,10 @@
 
 > **Week 4 · Day 5 · Behavioral · 🏁 Course finale**
 > Run just this kata: `dotnet test --filter "FullyQualifiedName~FinalProject"`
-> **Prerequisites:** finish **Day 1a (Observer)** and **Day 1b (State)** first.
+> **This is a build-from-scratch kata:** the finale's whole source was deleted — you build the
+> composing `TradingSession` yourself. Nothing here is stubbed.
+> **Prerequisites:** finish **Day 1a (Observer)** and **Day 1b (State)** first — this finale composes
+> both, so it won't compile until their types exist.
 
 ## Goal
 
@@ -12,17 +15,34 @@ whole desk informed — by composing two patterns:
 - **State** advances the order (New → PartiallyFilled → Filled / Cancelled) and enforces legal moves.
 - **Observer** broadcasts each new status to every subscriber (audit, client notifier, …).
 
-## The exercise
+## Target API — what the (commented-out) tests expect
 
-Implement `TradingSession.Fill` and `Cancel` in [`TradingSession.cs`](./TradingSession.cs). Each does
-two steps:
+This is the finale: you create the one composing type below, and it *composes* types you already built
+in the prerequisite katas. **Name and signatures are fixed by the tests; the wiring inside is your
+design.**
 
-1. Advance the state machine — `_order.Fill(quantity)` or `_order.Cancel()`.
-2. Announce the result — `_publisher.ChangeStatus(_orderId, ToStatus(_order.Status))`.
+| Type (you create) | Shape | Behaviour the tests pin down |
+|-------------------|-------|------------------------------|
+| `TradingSession` | `TradingSession(string orderId, int quantity, OrderStatusPublisher publisher)`; `void Fill(int quantity)`; `void Cancel()`; `string Status { get; }` | `Fill`/`Cancel` advance the internal State machine, then publish the new status through the Observer publisher; `Status` reflects the state machine (`"PartiallyFilled"` → `"Filled"`, or `"Cancelled"`) |
 
-```bash
-dotnet test --filter "FullyQualifiedName~FinalProject"
-```
+**Provided:** only this README — the `TradingSession` is yours to write. The **dependency types come
+from the prerequisite katas**: `OrderStatusPublisher` / `AuditLog` / `ClientNotifier` / `OrderStatus`
+(Observer, Day 1a) and the order **state machine** with its `Fill`/`Cancel`/`Status` (State, Day 1b).
+If either isn't done, this won't compile.
+
+## Your task (from scratch)
+
+1. **Uncomment the tests.** In [`FinalProjectTests.cs`](../../../DesignPatternsBootcamp.Tests/Behavioral/FinalProjectTests.cs)
+   delete the `/*` and `*/`. Now `dotnet test --filter "FullyQualifiedName~FinalProject"` **won't
+   compile** — that's step one done. Missing-type errors point at this finale's `TradingSession` *and*
+   any prerequisite (Observer/State) type you haven't built yet.
+2. **Create `TradingSession`.** Add a new `.cs` file: the constructor holds the order id, a State
+   machine seeded with the quantity, and the injected `OrderStatusPublisher`; expose `Status` from the
+   state machine. Then make `Fill`/`Cancel` each do two steps:
+   - **Advance the state machine** — `Fill(quantity)` / `Cancel()` on the internal order.
+   - **Announce the result** — publish the new status through the publisher, so every subscribed
+     observer hears it.
+3. **Green.** `dotnet test --filter "FullyQualifiedName~FinalProject"`.
 
 The tests watch an order go New → PartiallyFilled → Filled while every subscribed observer records the
 journey — the State machine deciding *what happens*, the Observer deciding *who hears about it*.
@@ -97,7 +117,8 @@ You built a fintech platform, one pattern at a time. Here's the complete map.
 
 ## Done when
 
-- [ ] `Fill` and `Cancel` advance the state and publish the new status.
+- [ ] You built `TradingSession` from scratch; `Fill` and `Cancel` advance the state and publish the
+      new status (both prerequisite katas done first).
 - [ ] `dotnet test --filter "FullyQualifiedName~FinalProject"` is green.
 - [ ] You can name the pattern behind each part of this one method.
 

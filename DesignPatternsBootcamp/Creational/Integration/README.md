@@ -2,8 +2,10 @@
 
 > **Week 1 · Day 5 · Creational**
 > Run just this kata: `dotnet test --filter "FullyQualifiedName~Integration"`
+> **This is a build-from-scratch kata:** the capstone's whole source was deleted — you build the
+> composing `TradeDesk` yourself. Nothing here is stubbed.
 > **Prerequisites:** finish **Day 1b (Abstract Factory)** and **Day 2 (Builder)** first — this
-> capstone calls into both.
+> capstone *calls into both*, so it won't compile until their types exist.
 
 ## Goal
 
@@ -11,19 +13,37 @@ The individual katas each fixed one pain in isolation. Real systems combine patt
 two of them into a single flow: a **trade desk** that books a limit order and prices it for its
 market. One method, two patterns, cleanly composed.
 
-## The exercise
+## Target API — what the (commented-out) tests expect
 
-Implement `TradeDesk.BookLimitBuy(...)` in [`TradeDesk.cs`](./TradeDesk.cs):
+This is a capstone: you create the composing types below, and they *lean on* types you already built
+in the prerequisite katas. **Names and signatures are fixed by the tests; the composition inside is
+your design.**
 
-1. **Builder** — assemble a validated, immutable `TradeOrder`:
-   `TradeOrderBuilder.Create().Buy(quantity, symbol).Limit(limitPrice).ForAccount(account).Build()`.
-2. **Abstract Factory** — pull the fee schedule and settlement policy from the desk's `IMarketFactory`.
-3. Charge commission on the **notional** (`quantity × limitPrice`), and attach the settlement terms.
-4. Return a `TradeTicket`.
+| Type (you create) | Shape | Behaviour the tests pin down |
+|-------------------|-------|------------------------------|
+| `TradeDesk` | `TradeDesk(IMarketFactory market)`; `TradeTicket BookLimitBuy(string symbol, int quantity, decimal limitPrice, string account)` | builds a validated limit-buy order (Builder), prices commission on the notional and reads settlement from the desk's one `IMarketFactory` (Abstract Factory), and returns a ticket |
+| `TradeTicket` | bundles `.Order` (the built `TradeOrder`), `.Commission` (`Money`), `.SettlementDays` (`int`), `.SettlementCurrency` (`string`) | the result of a booking; `.Order` exposes `Side`, `OrderType`, `Quantity`, `LimitPrice`, `Account` |
 
-```bash
-dotnet test --filter "FullyQualifiedName~Integration"
-```
+**Provided:** nothing but this README — the whole capstone is yours to write. The **dependency types
+come from the prerequisite katas**: `IMarketFactory` / `UsMarketFactory` / `EuMarketFactory` / `Money`
+(Abstract Factory, Day 1b) and `TradeOrderBuilder` / `TradeOrder` / `Side` / `OrderType` (Builder,
+Day 2). If those aren't done, this won't compile.
+
+## Your task (from scratch)
+
+1. **Uncomment the tests.** In [`IntegrationTests.cs`](../../../DesignPatternsBootcamp.Tests/Creational/IntegrationTests.cs)
+   delete the `/*` and `*/`. Now `dotnet test --filter "FullyQualifiedName~Integration"` **won't
+   compile** — that's step one done. Missing-type errors point at both this capstone's types *and* any
+   prerequisite type you haven't built yet.
+2. **Create the `TradeTicket`.** Add a new `.cs` file holding the ticket fields the tests read
+   (`Order`, `Commission`, `SettlementDays`, `SettlementCurrency`).
+3. **Create the `TradeDesk` and `BookLimitBuy`.** Compose the two patterns:
+   - **Builder** — assemble a validated, immutable `TradeOrder`:
+     `TradeOrderBuilder.Create().Buy(quantity, symbol).Limit(limitPrice).ForAccount(account).Build()`.
+   - **Abstract Factory** — pull the fee schedule and settlement policy from the desk's `IMarketFactory`.
+   - Charge commission on the **notional** (`quantity × limitPrice`) and attach the settlement terms,
+     then return a `TradeTicket`.
+4. **Green.** `dotnet test --filter "FullyQualifiedName~Integration"`.
 
 Notice what the composition buys you: the desk holds **one** `IMarketFactory`, so every ticket it
 produces is priced *and* settled in the same market — the consistency guarantee from Day 1b now
@@ -74,7 +94,8 @@ All five answer *"how should this object come into existence?"* — that is what
 
 ## Done when
 
-- [ ] `TradeDesk.BookLimitBuy` composes Builder + Abstract Factory.
+- [ ] You built `TradeTicket` and `TradeDesk.BookLimitBuy` from scratch, composing Builder + Abstract
+      Factory (both prerequisite katas done first).
 - [ ] `dotnet test --filter "FullyQualifiedName~Integration"` is green.
 - [ ] You can explain, using this one method, why "creational patterns" are a family — and which
       question each of the five answers.

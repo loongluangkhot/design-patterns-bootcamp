@@ -2,6 +2,7 @@
 
 > **Week 2 · Day 3a · Structural**
 > Run just this kata: `dotnet test --filter "FullyQualifiedName~Facade"`
+> **This is a build-from-scratch kata:** the subsystem is provided; you build the facade yourself.
 
 ## The scenario
 
@@ -76,20 +77,35 @@ sequenceDiagram
     F-->>Client: SettlementResult(Settled, ref)
 ```
 
-## Your task
+## Target API — what the (commented-out) tests expect
 
-Implement `Settle` in [`SettlementFacade.cs`](./SettlementFacade.cs):
+You must create this type so the tests compile and pass. **The name, constructor, and method
+signature are fixed by the tests; the choreography inside is your design.**
 
-1. Validate — on failure return a failed `SettlementResult` with the reason; **do not** call clearing
-   or the ledger.
-2. Check funding (`trade.Notional`) — on failure return failed (`"Insufficient funds."`); again no
-   clearing, no ledger.
-3. Otherwise submit to clearing, post the returned reference to the ledger, and return a successful
-   result carrying that reference.
+| Type | Shape | Behaviour the tests pin down |
+|------|-------|------------------------------|
+| `SettlementFacade` | `SettlementFacade(TradeValidator validator, FundingService funding, ClearingHouse clearing, Ledger ledger)`; `SettlementResult Settle(Trade trade)` | takes the four subsystems in, then `Settle` runs the whole dance and returns one result |
 
-```bash
-dotnet test --filter "FullyQualifiedName~Facade"
-```
+**Provided (do not recreate):** `Subsystems.cs` gives you the `Trade` record, the `SettlementResult`
+record (`bool Settled`, `string? ClearingReference`, `string Message`), and the four subsystems
+`TradeValidator`, `FundingService`, `ClearingHouse`, `Ledger` — all complete. `Legacy/` holds the
+"before" code. The facade is the **only** type missing.
+
+## Your task (from scratch)
+
+1. **Uncomment the tests.** In [`FacadeTests.cs`](../../../DesignPatternsBootcamp.Tests/Structural/FacadeTests.cs)
+   delete the `/*` and `*/`. Now `dotnet test --filter "FullyQualifiedName~Facade"` **won't compile** —
+   the only missing type is `SettlementFacade`, so that single build error is your checklist.
+2. **Create the facade.** Add a new `.cs` file in this folder; define `SettlementFacade` with the
+   four-subsystem constructor and a `Settle(Trade)` method returning `SettlementResult`.
+3. **Choreograph the subsystem.** Inside `Settle`:
+   - Validate — on failure return a **failed** `SettlementResult` carrying the reason; **do not** call
+     clearing or the ledger.
+   - Check funding (`trade.Notional`) — on failure return failed (`"Insufficient funds."`); again no
+     clearing, no ledger.
+   - Otherwise submit to clearing, post the returned reference to the ledger, and return a **successful**
+     result carrying that reference.
+4. **Green.** `dotnet test --filter "FullyQualifiedName~Facade"`.
 
 The short-circuit tests check `clearing.SubmissionCount == 0` and an empty ledger on rejection — so
 your ordering and early-returns actually matter.
@@ -114,6 +130,7 @@ your ordering and early-returns actually matter.
 
 ## Done when
 
-- [ ] `Settle` choreographs the four subsystems with correct short-circuiting.
+- [ ] You created `SettlementFacade` from scratch, choreographing the four subsystems with correct
+  short-circuiting.
 - [ ] `dotnet test --filter "FullyQualifiedName~Facade"` is fully green.
 - [ ] You can explain why a rejected trade must leave `SubmissionCount` at 0.

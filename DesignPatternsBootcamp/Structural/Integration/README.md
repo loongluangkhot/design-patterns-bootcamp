@@ -2,7 +2,11 @@
 
 > **Week 2 · Day 5 · Structural**
 > Run just this kata: `dotnet test --filter "FullyQualifiedName~StructuralIntegration"`
-> **Prerequisite:** finish **Day 4 (Proxy)** first — this capstone relies on the caching proxy.
+> **This is a build-from-scratch kata:** the capstone's whole source was deleted — you build the
+> composing `LivePortfolioValuation` yourself. Nothing here is stubbed.
+> **Prerequisite:** finish **Day 4 (Proxy)** first — this capstone relies on the caching proxy, so it
+> won't compile until Proxy's types exist. (You use Composite's tree directly, so its `MarketValue`
+> kata need not be done.)
 
 ## Goal
 
@@ -15,17 +19,31 @@ efficiently — by stacking two of them:
 
 That is the "structural optimization" theme of the week in one method.
 
-## The exercise
+## Target API — what the (commented-out) tests expect
 
-Implement `LivePortfolioValuation.MarketValue(IPortfolioComponent)` in
-[`LivePortfolioValuation.cs`](./LivePortfolioValuation.cs) by walking the Composite tree:
+This is a capstone: you create the one composing type below, and it *leans on* types you already built
+in the prerequisite katas. **The name and signatures are fixed by the tests; the recursion inside is
+your design.**
 
-- `Position p` → `p.Quantity * _prices.GetPrice(p.Name)`
-- `Portfolio pf` → sum of `MarketValue(child)` over `pf.Children`
+| Type (you create) | Shape | Behaviour the tests pin down |
+|-------------------|-------|------------------------------|
+| `LivePortfolioValuation` | `LivePortfolioValuation(IPriceService prices)`; `decimal MarketValue(IPortfolioComponent component)` | walks the Composite tree, repricing every position live through the injected `IPriceService`: `Position p` → `p.Quantity * prices.GetPrice(p.Name)`; `Portfolio pf` → sum of `MarketValue(child)` over `pf.Children` |
 
-```bash
-dotnet test --filter "FullyQualifiedName~StructuralIntegration"
-```
+**Provided:** only this README — the capstone class is yours to write. The **dependency types come
+from the prerequisite katas**: `IPriceService` / `CachingPriceProxy` / `RealPriceService` (Proxy,
+Day 4) and `IPortfolioComponent` / `Portfolio` / `Position` (Composite, Day 2a — its tree is used
+directly). If Proxy isn't done, this won't compile.
+
+## Your task (from scratch)
+
+1. **Uncomment the tests.** In [`StructuralIntegrationTests.cs`](../../../DesignPatternsBootcamp.Tests/Structural/StructuralIntegrationTests.cs)
+   delete the `/*` and `*/`. Now `dotnet test --filter "FullyQualifiedName~StructuralIntegration"`
+   **won't compile** — that's step one done. Missing-type errors point at this capstone's
+   `LivePortfolioValuation` *and* any prerequisite (Proxy/Composite) type you haven't built yet.
+2. **Create `LivePortfolioValuation`.** Add a new `.cs` file: a constructor that stores the injected
+   `IPriceService`, and a `MarketValue(IPortfolioComponent)` that recurses over the Composite tree —
+   `Position` → `Quantity × prices.GetPrice(Name)`, `Portfolio` → sum over `Children`.
+3. **Green.** `dotnet test --filter "FullyQualifiedName~StructuralIntegration"`.
 
 The key test, `Each_distinct_symbol_is_priced_only_once_across_the_whole_book`, puts `AAPL` in two
 different sub-portfolios and asserts the backend was hit **twice total** (AAPL + MSFT). That only
@@ -74,7 +92,8 @@ Decorator, Facade, Proxy), some by **arranging** (Bridge, Composite), some by **
 
 ## Done when
 
-- [ ] `MarketValue` walks the Composite tree and prices via the injected `IPriceService`.
+- [ ] You built `LivePortfolioValuation` from scratch; `MarketValue` walks the Composite tree and
+      prices via the injected `IPriceService` (Proxy kata done first).
 - [ ] `dotnet test --filter "FullyQualifiedName~StructuralIntegration"` is green.
 - [ ] You can explain why AAPL-in-two-places still costs only one backend call.
 

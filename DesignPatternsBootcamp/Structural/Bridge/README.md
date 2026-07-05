@@ -2,6 +2,7 @@
 
 > **Week 2 · Day 1b · Structural**
 > Run just this kata: `dotnet test --filter "FullyQualifiedName~Bridge"`
+> **This is a build-from-scratch kata:** you create every type yourself. Nothing is stubbed.
 
 ## The scenario
 
@@ -80,20 +81,44 @@ hierarchy (feeds) grow on their own.
 > after the fact. Bridge is a *deliberate up-front* design that keeps two hierarchies apart so both
 > can evolve. Adapter reacts; Bridge plans.
 
-## Your task
+## Target API — what the (commented-out) tests expect
 
-Implement the two refined indicators in [`PriceIndicator.cs`](./PriceIndicator.cs). Each uses the
-`Source` it was handed:
+You build **both** hierarchies — the implementor axis (feeds) and the abstraction axis (indicators).
+**Names and constructor signatures are fixed by the tests; everything inside is your design.**
 
-1. **`LastTradeIndicator.Value`** — the last element of `Source.RecentTicks(symbol)`.
-2. **`MovingAverageIndicator.Value`** — the average of `Source.RecentTicks(symbol)`.
+| Type | Shape | Behaviour the tests pin down |
+|------|-------|------------------------------|
+| `IPriceSource` | interface: `IReadOnlyList<decimal> RecentTicks(string symbol)` | the implementor primitive — "where ticks come from" |
+| `PrimaryFeed` | `PrimaryFeed()` — implements `IPriceSource` | canned data: `"AAPL" → [100, 101, 102]` |
+| `BackupFeed` | `BackupFeed()` — implements `IPriceSource` | canned data: `"AAPL" → [100, 104]` |
+| `PriceIndicator` | abstract; **holds** an `IPriceSource`; `abstract decimal Value(string symbol)` | the abstraction that bridges to a source (composition, not inheritance) |
+| `LastTradeIndicator` | `LastTradeIndicator(IPriceSource source)` : `PriceIndicator` | `Value` = the **last** tick of `RecentTicks(symbol)` |
+| `MovingAverageIndicator` | `MovingAverageIndicator(IPriceSource source)` : `PriceIndicator` | `Value` = the **average** of `RecentTicks(symbol)` |
 
-```bash
-dotnet test --filter "FullyQualifiedName~Bridge"
-```
+The exact totals the tests assert fall straight out of that canned data: primary `[100, 101, 102]` →
+last `102`, average `101`; backup `[100, 104]` → last `104`, average `102`. Reproduce those two feeds
+faithfully or the numbers won't line up.
+
+**Provided (do not edit):** the [`Legacy/`](./Legacy/) baseline (`PrimaryLastTrade`,
+`BackupMovingAverage`, …) — the four hand-baked combination classes you are replacing. Everything in
+the table above you build.
+
+## Your task (from scratch)
+
+1. **Uncomment the tests.** In [`BridgeTests.cs`](../../../DesignPatternsBootcamp.Tests/Structural/BridgeTests.cs)
+   delete the `/*` and `*/`. Now `dotnet test --filter "FullyQualifiedName~Bridge"` **won't
+   compile** — that's step one done. Each "type or namespace could not be found" is a type on your
+   checklist. (The `Legacy_primary_last_trade…` test already passes against the provided baseline.)
+2. **Build the implementor axis.** Add a new `.cs` file; define `IPriceSource` with the single
+   `RecentTicks` primitive, then `PrimaryFeed` and `BackupFeed` returning the canned ticks above.
+3. **Build the abstraction axis.** Define the abstract `PriceIndicator` that is *handed* an
+   `IPriceSource` and holds it (the "bridge"), with an abstract `Value`.
+4. **Add the refined indicators.** `LastTradeIndicator` takes the last tick; `MovingAverageIndicator`
+   averages them. Each reads through its `Source`, never knowing which feed it got.
+5. **Green.** `dotnet test --filter "FullyQualifiedName~Bridge"`.
 
 The `Any_indicator_combines_with_any_feed` test builds all four behaviours from just your two
-indicators and the two provided feeds — no combination classes anywhere.
+indicators and the two feeds — no combination classes anywhere.
 
 ### Stretch goals
 
@@ -115,6 +140,7 @@ indicators and the two provided feeds — no combination classes anywhere.
 
 ## Done when
 
-- [ ] Both refined indicators are implemented against `Source`.
+- [ ] You created `IPriceSource` + the two feeds, and `PriceIndicator` + the two refined indicators.
+- [ ] Each refined indicator reads through its `Source` and never names a concrete feed.
 - [ ] `dotnet test --filter "FullyQualifiedName~Bridge"` is fully green.
 - [ ] You can state how many classes 3 indicators × 4 feeds needs with Bridge (7) vs. without (12).

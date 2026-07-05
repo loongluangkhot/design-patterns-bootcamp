@@ -2,6 +2,7 @@
 
 > **Week 1 · Day 2 · Creational**
 > Run just this kata: `dotnet test --filter "FullyQualifiedName~Builder"`
+> **This is a build-from-scratch kata:** you create every type yourself. Nothing is stubbed.
 
 ## The scenario
 
@@ -99,26 +100,54 @@ sequenceDiagram
     B-->>C: immutable TradeOrder
 ```
 
-## Your task
+## Target API — what the (commented-out) tests expect
 
-The fluent steps are already written (read them — they simply record intent and `return this`).
-**Your job is to implement `Build()`** in [`TradeOrderBuilder.cs`](./TradeOrderBuilder.cs).
+The **Product** (`TradeOrder`), its enums, and `Allocation` are provided; the one type you build is
+`TradeOrderBuilder`, with this exact fluent surface. **Every method name and signature below is fixed
+by the tests; the bodies are your design.**
 
-1. Validate, throwing `InvalidOperationException` on any violation:
-   - Quantity must be `> 0`.
-   - Symbol must be non-empty.
-   - Account must be set.
-   - If any allocations were added, they must **sum to the order quantity**.
-2. Construct the `TradeOrder`. **Defensive copy** the allocations into a new read-only list so a
-   caller who keeps using the builder can't mutate an order you already returned.
-3. Run the tests:
-   ```bash
-   dotnet test --filter "FullyQualifiedName~Builder"
-   ```
+| Member | Signature | Behaviour the tests pin down |
+|--------|-----------|------------------------------|
+| `Create` | `static TradeOrderBuilder Create()` | starts a fresh builder |
+| `Buy` | `Buy(int quantity, string symbol)` → `this` | sets `Side.Buy`, quantity, symbol |
+| `Sell` | `Sell(int quantity, string symbol)` → `this` | sets `Side.Sell`, quantity, symbol |
+| `ForAccount` | `ForAccount(string account)` → `this` | records the account |
+| `Limit` | `Limit(decimal price)` → `this` | `OrderType.Limit`, records the limit price |
+| `StopLimit` | `StopLimit(decimal stopPrice, decimal limitPrice)` → `this` | `OrderType.StopLimit`, records both prices (called with **named** args) |
+| `GoodTilCanceled` | `GoodTilCanceled()` → `this` | `TimeInForce.GoodTilCanceled` |
+| `WithNote` | `WithNote(string note)` → `this` | attaches a free-text note |
+| `AllocateTo` | `AllocateTo(string subAccount, int quantity)` → `this` | appends one `Allocation` |
+| `Build` | `TradeOrder Build()` | validates, then returns an immutable snapshot |
 
-Note *why* validation lives in `Build()` and not in the setters: the allocation-sum rule spans
-multiple fields, so it simply cannot be checked until every step has run. That is the essence of
-"deferred construction."
+Defaults when a step is never called: `OrderType.Market`, `LimitPrice`/`StopPrice` `null`,
+`TimeInForce.Day`, empty `Allocations`. `Build()` throws `InvalidOperationException` when quantity
+`<= 0`, symbol is empty, account is unset, or (if any allocations were added) they don't **sum to the
+quantity**. It must defensive-copy the allocations so a later `.AllocateTo(…)` on the builder can't
+mutate an order it already returned.
+
+**Provided (do not recreate):** the `Side`, `OrderType`, `TimeInForce` enums, the `Allocation` record,
+and the immutable `TradeOrder` record — all in [`OrderModels.cs`](./OrderModels.cs); plus the "before"
+[`Legacy/LegacyOrder.cs`](./Legacy/LegacyOrder.cs).
+
+## Your task (from scratch)
+
+1. **Uncomment the tests.** In
+   [`BuilderTests.cs`](../../../DesignPatternsBootcamp.Tests/Creational/BuilderTests.cs) delete the
+   `/*` and `*/`. `dotnet test --filter "FullyQualifiedName~Builder"` now **won't compile** — every
+   `TradeOrderBuilder` member the tests call is missing. That build-error list is your to-do list.
+2. **Create the builder and its fluent steps.** Add a `.cs` file; define `TradeOrderBuilder` with the
+   static `Create()` and every step in the table, each recording intent and returning `this`. Pick
+   the defaults (`Market`, `Day`, no prices, empty allocations) so a bare
+   `Buy(…).ForAccount(…).Build()` reads right. `Builds_a_simple_market_order_with_sensible_defaults`
+   is your first target.
+3. **Implement `Build()` as the single validation gate.** Throw `InvalidOperationException` on a
+   non-positive quantity, empty symbol, missing account, or allocations that don't sum to the
+   quantity. The allocation-sum rule spans several fields, so it *cannot* live in a setter — that is
+   the point of deferring to `Build()`.
+4. **Return an immutable snapshot.** Defensive-copy the allocations into a fresh read-only list so a
+   caller who keeps chaining `.AllocateTo(…)` after `Build()` can't mutate an order you already handed
+   back. `Built_orders_are_immutable_snapshots…` guards this.
+5. **Green.** `dotnet test --filter "FullyQualifiedName~Builder"`.
 
 ### Stretch goals
 
@@ -142,6 +171,7 @@ multiple fields, so it simply cannot be checked until every step has run. That i
 
 ## Done when
 
+- [ ] You built `TradeOrderBuilder` from scratch — every fluent step plus `Build()`.
 - [ ] `Build()` validates all four rules and defensively copies allocations.
 - [ ] `dotnet test --filter "FullyQualifiedName~Builder"` is fully green.
 - [ ] You can explain why the allocation-sum check *cannot* live in a setter.

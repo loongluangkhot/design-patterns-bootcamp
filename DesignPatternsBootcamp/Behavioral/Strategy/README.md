@@ -2,6 +2,7 @@
 
 > **Week 4 · Day 2a · Behavioral**
 > Run just this kata: `dotnet test --filter "FullyQualifiedName~Strategy"`
+> **This is a build-from-scratch kata:** you create every type yourself. Nothing is stubbed.
 
 ## The scenario
 
@@ -70,17 +71,37 @@ classDiagram
 > algorithm by composition (swap the object); Template Method varies *steps* of a fixed skeleton by
 > inheritance.
 
-## Your task
+## Target API — what the (commented-out) tests expect
 
-Implement `Calculate` for the three strategies in [`FeeStrategies.cs`](./FeeStrategies.cs):
+You must create these types so the tests compile and pass. **Names and constructor signatures are
+fixed by the tests; everything inside is your design.**
 
-1. **`FlatFee`** → the constant `_amount`.
-2. **`PercentageFee`** → `Math.Round(notional * _rate, 2)`.
-3. **`TieredFee`** → `0.1%` below `$100k`, `0.05%` at/above, rounded to cents.
+| Type | Shape | Behaviour the tests pin down |
+|------|-------|------------------------------|
+| `IFeeStrategy` | interface: `decimal Calculate(decimal notional)` | the common strategy type |
+| `FlatFee` | `FlatFee(decimal amount)` | `Calculate` returns the constant `amount`, ignoring notional |
+| `PercentageFee` | `PercentageFee(decimal rate)` | `Calculate` returns `notional × rate`, rounded to cents |
+| `TieredFee` | `TieredFee()` (no args) | `0.1%` below `$100k`, `0.05%` at/above, rounded to cents |
+| `FeeCalculator` | `FeeCalculator(IFeeStrategy strategy)`; `decimal FeeFor(decimal notional)`; `void UseStrategy(IFeeStrategy strategy)` | delegates `FeeFor` to the current strategy; `UseStrategy` swaps it at runtime |
 
-```bash
-dotnet test --filter "FullyQualifiedName~Strategy"
-```
+**Provided:** only `Legacy/LegacyFeeCalculator.cs` (the "before" switch). Every type above you build
+yourself — the exact fee numbers are in the tests.
+
+## Your task (from scratch)
+
+1. **Uncomment the tests.** In [`StrategyTests.cs`](../../../DesignPatternsBootcamp.Tests/Behavioral/StrategyTests.cs)
+   delete the `/*` and `*/`. Now `dotnet test --filter "FullyQualifiedName~Strategy"` **won't
+   compile** — that's step one done. Each "type could not be found" error is one row of the table above.
+2. **Create the strategy interface + concrete strategies.** Add a new `.cs` file in this folder;
+   define `IFeeStrategy` and the three algorithms:
+   - **`FlatFee`** → the constant amount.
+   - **`PercentageFee`** → `Math.Round(notional * rate, 2)`.
+   - **`TieredFee`** → `0.1%` below `$100k`, `0.05%` at/above, rounded to cents.
+   That greens `Flat_fee_is_constant`, `Percentage_fee_scales_with_notional`, and
+   `Tiered_fee_picks_the_right_band`.
+3. **Create the context.** Add `FeeCalculator`: it holds an `IFeeStrategy`, delegates `FeeFor` to it,
+   and `UseStrategy` replaces it. That greens `The_calculator_swaps_strategies_at_runtime`.
+4. **Green.** `dotnet test --filter "FullyQualifiedName~Strategy"`.
 
 `The_calculator_swaps_strategies_at_runtime` shows the payoff: the same context produces different
 fees just by swapping the strategy object — no branching in sight.
@@ -105,6 +126,6 @@ fees just by swapping the strategy object — no branching in sight.
 
 ## Done when
 
-- [ ] All three strategies implement `Calculate`.
+- [ ] You created `IFeeStrategy`, the three strategies, and the `FeeCalculator` context from scratch.
 - [ ] `dotnet test --filter "FullyQualifiedName~Strategy"` is fully green.
 - [ ] You can articulate the difference between Strategy and State.

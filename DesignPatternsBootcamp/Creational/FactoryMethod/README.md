@@ -2,6 +2,7 @@
 
 > **Week 1 · Day 1a · Creational**
 > Run just this kata: `dotnet test --filter "FullyQualifiedName~FactoryMethod"`
+> **This is a build-from-scratch kata:** you create every type yourself. Nothing is stubbed.
 
 ## The scenario
 
@@ -99,22 +100,46 @@ classDiagram
 Read the arrows as: `Pay` (in the base) *uses* an `IPaymentProcessor`; each subclass *creates* the
 concrete one. The base never learns which rail it is running.
 
-## Your task
+## Target API — what the (commented-out) tests expect
 
-You are refactoring the legacy `switch` into the skeletons already stubbed out for you. The shared
-`Pay` workflow and the class layout are done — you supply the rail-specific bodies.
+Every implementation file was deleted; you recreate all of these so the tests compile and pass.
+**Names and constructor signatures are fixed by the tests; the bodies are your design.**
 
-1. **Implement the three Concrete Products** in [`Processors.cs`](./Processors.cs). Move each branch
-   of the legacy `switch` into the matching `Process` method. Keep the fees and the
-   `"CARD-…"/"ACH-…"/"WIRE-…"` confirmation prefixes identical.
-2. **Implement the three factory methods** in [`PaymentService.cs`](./PaymentService.cs). Each
-   `CreateProcessor()` override should return `new XPaymentProcessor()`.
-3. **Run the tests** and watch them go green:
-   ```bash
-   dotnet test --filter "FullyQualifiedName~FactoryMethod"
-   ```
-4. **Prove the point.** Notice you never touched `PaymentService.Pay`, and validation was written
-   exactly once. Adding a rail later is purely additive.
+| Type | Shape | Behaviour the tests pin down |
+|------|-------|------------------------------|
+| `IPaymentProcessor` | interface: `PaymentResult Process(PaymentRequest request)` | the **Product** — one rail's fee + confirmation, nothing else |
+| `CardPaymentProcessor` | `: IPaymentProcessor`, parameterless ctor | fee = `2.9% + $0.30` (→ `3.20` on `$100`); confirmation starts `"CARD-"` |
+| `AchPaymentProcessor` | `: IPaymentProcessor`, parameterless ctor | flat `$0.25` fee; confirmation starts `"ACH-"` |
+| `WirePaymentProcessor` | `: IPaymentProcessor`, parameterless ctor | flat `$15.00` fee; confirmation starts `"WIRE-"` |
+| `PaymentService` | abstract: `PaymentResult Pay(PaymentRequest request)` + abstract `IPaymentProcessor CreateProcessor()` | the **Creator.** `Pay` validates once (amount `> 0`, else a rejected result) then delegates to the processor from `CreateProcessor()` |
+| `CardPaymentService` | `: PaymentService`, parameterless ctor | overrides `CreateProcessor()` → a `CardPaymentProcessor` |
+| `AchPaymentService` | `: PaymentService`, parameterless ctor | overrides `CreateProcessor()` → an `AchPaymentProcessor` |
+| `WirePaymentService` | `: PaymentService`, parameterless ctor | overrides `CreateProcessor()` → a `WirePaymentProcessor` |
+
+**Provided (do not recreate):** `PaymentMethod`, `PaymentRequest`, and `PaymentResult` (with its
+`Ok`/`Rejected` factories) in [`PaymentModels.cs`](./PaymentModels.cs); the "before"
+[`Legacy/LegacyPaymentGateway.cs`](./Legacy/LegacyPaymentGateway.cs). The exact fee numbers and
+prefixes come straight from the legacy `switch` — read it.
+
+## Your task (from scratch)
+
+1. **Uncomment the tests.** In
+   [`FactoryMethodTests.cs`](../../../DesignPatternsBootcamp.Tests/Creational/FactoryMethodTests.cs)
+   delete the `/*` and `*/`. Now `dotnet test --filter "FullyQualifiedName~FactoryMethod"` **won't
+   compile** — that is step one done. Each "type or namespace could not be found" error names a type
+   from the table above: that build-error list is your to-do list.
+2. **Create the Product.** Add a `.cs` file in this folder; define `IPaymentProcessor` with a
+   `Process(PaymentRequest)` method, then the three concrete processors. Port each branch of the
+   legacy `switch` into its processor — same fee maths, same `"CARD-"/"ACH-"/"WIRE-"` prefixes. The
+   `..._service_creates_a_..._processor` tests go green as the types appear.
+3. **Create the Creator.** Add the abstract `PaymentService` with the shared `Pay` workflow and the
+   abstract `CreateProcessor()`. Write the amount-`> 0` validation **once** here, then hand off to the
+   processor — that is what `Shared_validation_lives_in_the_base_creator_for_every_rail` checks.
+4. **Create the Concrete Creators.** `CardPaymentService`, `AchPaymentService`, `WirePaymentService`
+   each override `CreateProcessor()` to return their own processor. Drive the fee/confirmation tests
+   from RED to GREEN.
+5. **Green.** `dotnet test --filter "FullyQualifiedName~FactoryMethod"`. Notice you never wrote a
+   `switch` — the subclass you chose *is* the decision.
 
 ### Stretch goals
 
@@ -143,7 +168,8 @@ product whose type varies.
 
 ## Done when
 
-- [ ] `Processors.cs` — all three `Process` methods implemented.
-- [ ] `PaymentService.cs` — all three `CreateProcessor` overrides implemented.
+- [ ] You created `IPaymentProcessor` + the three processors, and `PaymentService` + the three
+      services, all from scratch.
+- [ ] The amount validation is written exactly once, in `PaymentService.Pay`.
 - [ ] `dotnet test --filter "FullyQualifiedName~FactoryMethod"` is fully green.
-- [ ] You did **not** modify `PaymentService.Pay`.
+- [ ] Adding a fourth rail would be purely additive — no existing class edited.

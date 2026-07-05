@@ -1,8 +1,9 @@
 # Design Patterns Bootcamp
 
 A hands-on workbook for the 23 classic (Gang of Four) design patterns, taught through **fintech**
-scenarios in C#. Each pattern is a small **refactoring kata**: you start from working-but-rigid
-code, feel the pain it causes, then refactor it into the pattern until the tests pass.
+scenarios in C#. Each pattern is a **build-from-scratch kata**: you're given working-but-rigid
+"legacy" code and a test suite, and you build the pattern yourself — the interfaces, the classes,
+the structure, the logic — until the tests pass. Nothing is stubbed.
 
 ## Prerequisites
 
@@ -13,33 +14,41 @@ code, feel the pain it causes, then refactor it into the pattern until the tests
 
 ```
 DesignPatternsBootcamp.sln
-├─ DesignPatternsBootcamp/            ← the code you edit (a class library)
-│  └─ Creational/
-│     ├─ FactoryMethod/               ← one folder per pattern
-│     │  ├─ README.md                 ← the lesson: challenge, pattern, UML, steps
-│     │  ├─ Legacy/                   ← the "before" code that smells
-│     │  └─ *.cs                      ← the skeletons you fill in
-│     ├─ AbstractFactory/
-│     ├─ Builder/
-│     ├─ Prototype/
-│     ├─ Singleton/
-│     └─ Integration/                 ← end-of-week capstone
-└─ DesignPatternsBootcamp.Tests/      ← the tests that grade your work
-   └─ Creational/
+├─ DesignPatternsBootcamp/               ← the code you edit (a class library)
+│  ├─ Creational/                        Week 1
+│  │  ├─ FactoryMethod/                  ← every pattern folder has the same shape:
+│  │  │  ├─ README.md                    ←   the lesson: challenge, pattern, UML, target API
+│  │  │  ├─ Legacy/                      ←   the "before" code that smells (given)
+│  │  │  └─ *.cs                         ←   data types are given; you create the pattern classes
+│  │  ├─ AbstractFactory/  Builder/  Prototype/  Singleton/
+│  │  └─ Integration/                    ← end-of-week capstone (combines the week's patterns)
+│  ├─ Structural/                        Week 2
+│  │  ├─ Adapter/  Bridge/  Composite/  Decorator/  Facade/  Flyweight/  Proxy/
+│  │  └─ Integration/                    ← capstone
+│  └─ Behavioral/                        Weeks 3 & 4
+│     ├─ ChainOfResponsibility/  Command/  Interpreter/  Iterator/  Mediator/  Memento/
+│     ├─ Observer/  State/  Strategy/  TemplateMethod/  Visitor/
+│     ├─ Integration/                    ← Week 3 capstone
+│     └─ FinalProject/                   ← Week 4 capstone (the finale)
+└─ DesignPatternsBootcamp.Tests/         ← the tests that grade your work
+   └─ Creational/  Structural/  Behavioral/
 ```
 
-The `Structural/` and `Behavioral/` folders arrive in later weeks — see [STATUS.md](./STATUS.md) for
-the full roadmap.
+All 23 patterns are here. Work through them in the order laid out in [STATUS.md](./STATUS.md); each
+week ends with a capstone (`Integration`/`FinalProject`) that composes several patterns together.
 
 ## The workflow for every pattern
 
 1. **Read the folder's `README.md`.** It explains the business challenge, why the legacy code is
-   painful, the pattern that fixes it, a UML diagram, and step-by-step instructions.
+   painful, the pattern that fixes it, a UML diagram, and the **Target API** you must build.
 2. **Read the `Legacy/` code.** A working implementation with a real design flaw (a growing
-   `switch`, a telescoping constructor, a shared mutable template, …).
-3. **Run the tests and watch them fail (RED).** Failures are expected — the skeletons throw
-   `NotImplementedException` on purpose.
-4. **Refactor.** Move logic out of the legacy code into the pattern skeletons, following the steps.
+   `switch`, a telescoping constructor, a shared mutable template, …) — the thing you'll replace.
+3. **Uncomment that pattern's test file.** Each kata's tests ship commented out (so the whole
+   project builds before you start). Deleting the `/* … */` is step one — now the project **won't
+   compile**, and the "type `X` could not be found" errors are your to-do list.
+4. **Build the pattern from scratch.** Create the interfaces, classes, and logic the tests expect
+   (the README's *Target API* gives you the names and signatures; the numbers come from the tests).
+   Get it compiling, then green.
 5. **Run the tests until they pass (GREEN).**
 
 ## Running the tests
@@ -55,9 +64,10 @@ dotnet test --filter "FullyQualifiedName~FactoryMethod"
 dotnet test --filter "FullyQualifiedName~Builder"
 ```
 
-> **Tip:** `dotnet build` compiles everything even while skeletons are unimplemented
-> (`NotImplementedException` is a *runtime* error, not a compile error), so the solution always
-> builds. A failing test means "not implemented yet," not "broken project."
+> **Tip:** A freshly-cloned solution builds green with **zero** tests running, because every kata's
+> tests start commented out. When you uncomment a kata to begin it, that code will *stop compiling*
+> until you've created the types it references — that's expected, and the compiler errors are your
+> checklist. Only the kata you're actively working on needs to compile.
 
 ## Tracking progress
 
